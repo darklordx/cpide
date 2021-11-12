@@ -141,8 +141,8 @@ class CodeEditor(tk.Text):
         self.bind('<KeyRelease>', self.checkBraces, add='+')
         self.bind("<Tab>", self.tab)
         self.bind('<Return>', self.indent, add='+')
-        self.bind('<Return>', self.updateAutoCompleteList, add='+')
-        self.bind('<Key>', self.updateAutocompleteEntry, add='+')
+        # self.bind('<Return>', self.updateAutoCompleteList, add='+')
+        # self.bind('<Key>', self.updateAutocompleteEntry, add='+')
         self.bind('<BackSpace>', self.backtab)
         self.bind("<ButtonRelease-3>", self.textPadPopUp)
         self.bind('<Control-x>', self.cut)
@@ -150,7 +150,7 @@ class CodeEditor(tk.Text):
         self.bind('<Control-v>', self.paste)
         
         # set autocompleteList
-        self.SetAutoCompleteList()
+        # self.SetAutoCompleteList()
         
         # other importan variables
         self.charstring = ''
@@ -237,130 +237,130 @@ class CodeEditor(tk.Text):
             if last_line_text.endswith(':') and actual_line == '':
                 self.insert(tk.INSERT, self.tab_width * ' ')
 
-    # functions for autocomplete
-    def SetAutoCompleteList(self):
-        '''
-            basic autocompleteList with keywords and some important things (for me)
-        '''
-        
-        self.autocompleteList = ['__init__', '__main__','__name__', '__repr__', '__str__',
-                '__dict__', 'args', 'kwargs', "self", "__file__", 'super()'] # autocomplete
+    # # functions for autocomplete
+    # def SetAutoCompleteList(self):
+    #     '''
+    #         basic autocompleteList with keywords and some important things (for me)
+    #     '''
+    #
+    #     self.autocompleteList = ['__init__', '__main__','__name__', '__repr__', '__str__',
+    #             '__dict__', 'args', 'kwargs', "self", "__file__", 'super()'] # autocomplete
+    #
+    #     self.kwList = keyword.kwlist
+    #     for item in self.kwList:
+    #         self.autocompleteList.append(item)
+    #
+    # def updateAutoCompleteList(self, event=None):
+    #     '''
+    #         a simple algorithm for parsing the given text and filter important words
+    #     '''
+    #     self.SetAutoCompleteList()
+    #
+    #     first_list = []
+    #     second_list = []
+    #
+    #     text = self.get(1.0, tk.END)
+    #     text = text.replace("(", " ").replace(")", " ").replace\
+    #                     ("[", " ").replace("]", " ").replace\
+    #                     (':', " ").replace(',', " ").replace("<", " ").replace\
+    #                     (">", " ").replace("/", " ").replace("=", " ").replace\
+    #                     (";", " ").replace("self.", "").replace('.', ' ')
+    #
+    #     first_list = text.split('\n')
+    #
+    #     for row in first_list:
+    #         if row.startswith('import '):
+    #             try:
+    #                 # try to import global variables from import
+    #                 # -> this could be made better ... :)
+    #                 module_name = row.replace('import' , ' ')
+    #                 module_name = module_name.split()[0]
+    #
+    #                 module = importlib.import_module(module_name, package=None)
+    #                 x = dir(module)
+    #
+    #                 for elem in x:
+    #                     if elem.startswith('_'):
+    #                         continue
+    #                     else:
+    #                         second_list.append(elem)
+    #
+    #             except Exception as e:
+    #                 #print(str(e))
+    #                 continue
+    #
+    #         elif row.strip().startswith('#') or row.strip().startswith('"""') or\
+    #            row.strip().startswith("'''"):
+    #             continue
+    #         else:
+    #             word_list = row.split()
+    #             for word in word_list:
+    #                 if re.match("(^[0-9])", word):
+    #                     continue
+    #                 elif '#' in word:
+    #                     continue
+    #                 elif word in self.kwList:
+    #                     continue
+    #                 elif word in self.autocompleteList:
+    #                     continue
+    #                 elif not len(word) < 3:
+    #                     w = re.sub("{}<>;,:]", '', word)
+    #                     second_list.append(w)
+    #
+    #     # delete doubled entries ...
+    #     x = set(second_list)
+    #     second_list = list(x)
+    #
+    #     for word in second_list:
+    #         if len(word) > 25:
+    #             continue
+    #         self.autocompleteList.append(word)
+    #     #print()
+    #     #print(self.autocompleteList)
+    #     return
 
-        self.kwList = keyword.kwlist
-        for item in self.kwList:
-            self.autocompleteList.append(item)
 
-    def updateAutoCompleteList(self, event=None):
-        '''
-            a simple algorithm for parsing the given text and filter important words
-        '''
-        self.SetAutoCompleteList()
-            
-        first_list = []
-        second_list = []
-        
-        text = self.get(1.0, tk.END)
-        text = text.replace("(", " ").replace(")", " ").replace\
-                        ("[", " ").replace("]", " ").replace\
-                        (':', " ").replace(',', " ").replace("<", " ").replace\
-                        (">", " ").replace("/", " ").replace("=", " ").replace\
-                        (";", " ").replace("self.", "").replace('.', ' ')
-        
-        first_list = text.split('\n')
-        
-        for row in first_list:
-            if row.startswith('import '):
-                try:
-                    # try to import global variables from import 
-                    # -> this could be made better ... :)
-                    module_name = row.replace('import' , ' ')
-                    module_name = module_name.split()[0]
-                    
-                    module = importlib.import_module(module_name, package=None)
-                    x = dir(module)
-
-                    for elem in x:
-                        if elem.startswith('_'):
-                            continue
-                        else:
-                            second_list.append(elem)
-                
-                except Exception as e:
-                    #print(str(e))
-                    continue
-                        
-            elif row.strip().startswith('#') or row.strip().startswith('"""') or\
-               row.strip().startswith("'''"):
-                continue
-            else:
-                word_list = row.split()
-                for word in word_list:
-                    if re.match("(^[0-9])", word):
-                        continue
-                    elif '#' in word:
-                        continue
-                    elif word in self.kwList:
-                        continue
-                    elif word in self.autocompleteList:
-                        continue
-                    elif not len(word) < 3:
-                        w = re.sub("{}<>;,:]", '', word)
-                        second_list.append(w)
-        
-        # delete doubled entries ...
-        x = set(second_list)
-        second_list = list(x)
-
-        for word in second_list:
-            if len(word) > 25:
-                continue
-            self.autocompleteList.append(word)
-        #print()
-        #print(self.autocompleteList)
-        return
-
-
-    def updateAutocompleteEntry(self, event=None):
-        '''
-            make new list for the input from the user
-        '''
-        char = event.char
-        key = event.keycode
-        sym = event.keysym
-        
-        # debugging ... :)
-        #print(char)
-        #print(key)
-        
-        self.list = []
-        if sym in ("Up", "Down", "Left", "Right", "Space", \
-                            "Control_R", "Control_L", "Alt_R", "Alt_L", \
-                            "Backtab", "Return"):
-            
-            # set label and variables to none
-            self.entry.config(text='---')
-            self.list = []
-            self.charstring = ''
-        
-        elif char in [".", "(", ")", '"', "'", ",", "="]:
-            self.entry.config(text='---')
-            self.list = []
-            self.charstring = ''
-        
-        else:
-            self.charstring += char
-            for item in self.autocompleteList:
-                if item.startswith(self.charstring):
-                    self.list.append(item)
-            
-            
-            if self.list and len(self.charstring)>=2:
-                self.entry.config(text=self.list[0])                            
-            else:
-                self.entry.config(text='---')
-
-            if len(self.list) == 3:
-                self.entry.config(text=self.list[0])
+    # def updateAutocompleteEntry(self, event=None):
+    #     '''
+    #         make new list for the input from the user
+    #     '''
+    #     char = event.char
+    #     key = event.keycode
+    #     sym = event.keysym
+    #
+    #     # debugging ... :)
+    #     #print(char)
+    #     #print(key)
+    #
+    #     self.list = []
+    #     if sym in ("Up", "Down", "Left", "Right", "Space", \
+    #                         "Control_R", "Control_L", "Alt_R", "Alt_L", \
+    #                         "Backtab", "Return"):
+    #
+    #         # set label and variables to none
+    #         self.entry.config(text='---')
+    #         self.list = []
+    #         self.charstring = ''
+    #
+    #     elif char in [".", "(", ")", '"', "'", ",", "="]:
+    #         self.entry.config(text='---')
+    #         self.list = []
+    #         self.charstring = ''
+    #
+    #     else:
+    #         self.charstring += char
+    #         for item in self.autocompleteList:
+    #             if item.startswith(self.charstring):
+    #                 self.list.append(item)
+    #
+    #
+    #         if self.list and len(self.charstring)>=2:
+    #             self.entry.config(text=self.list[0])
+    #         else:
+    #             self.entry.config(text='---')
+    #
+    #         if len(self.list) == 3:
+    #             self.entry.config(text=self.list[0])
                             
 
 
@@ -395,7 +395,7 @@ class CodeEditor(tk.Text):
                 self.delete('sel.first', 'sel.last')
             
         self.charstring == ''
-        self.entry.config(text='---')
+        # self.entry.config(text='---')
         self.list = []
         
         return 'break'
@@ -404,7 +404,7 @@ class CodeEditor(tk.Text):
         '''
             make backtab when using backspace
         '''
-        self.entry.config(text='---')
+        # self.entry.config(text='---')
         self.list = []
         self.charstring = ''
 
@@ -419,7 +419,7 @@ class CodeEditor(tk.Text):
         '''
             make indent
         '''
-        self.entry.config(text='---')
+        # self.entry.config(text='---')
         self.list = []
         self.charstring = ''
         
@@ -429,7 +429,7 @@ class CodeEditor(tk.Text):
         pos = int(index[1])
         
         
-        self.updateAutoCompleteList()
+        # self.updateAutoCompleteList()
         
         if pos == 0:
             return
@@ -661,8 +661,8 @@ class CodeeditorFrame(ttk.Frame):
         frame1.pack(fill=tk.BOTH, expand=True)
         
         # autocompleteEntry (packed on bottom)
-        self.autocompleteEntry = ttk.Label(frame1, text='---', font=('Mono', 14))
-        self.autocompleteEntry.pack(side='bottom', fill='y')
+        # self.autocompleteEntry = ttk.Label(frame1, text='---', font=('Mono', 14))
+        # self.autocompleteEntry.pack(side='bottom', fill='y')
         
         # scrollbar y
         textScrollY = ttk.Scrollbar(frame1, orient=tk.VERTICAL)
@@ -690,7 +690,7 @@ class CodeeditorFrame(ttk.Frame):
         self.linenumber.attach(self.textPad)
 
 
-        self.textPad.entry = self.autocompleteEntry
+        # self.textPad.entry = self.autocompleteEntry
         self.textPad.linenumber = self.linenumber
         
         self.textPad.bind("<<Change>>", self.on_change)

@@ -185,7 +185,7 @@ class NotebookFrame(ttk.Frame):
         self.tabChanged()
         
         # update autocompleteList from codeeditor
-        self.textPad.updateAutoCompleteList()
+        # self.textPad.updateAutoCompleteList()
         self.filebrowserFrame.refreshTree()
 
     def openFileDialog(self):

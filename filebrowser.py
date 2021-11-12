@@ -25,7 +25,7 @@ class FilebrowserFrame(ttk.Frame):
         self.notebookFrame = None
     
     def initUI(self):
-        self.config
+        # self.config
         
         treeScrollY = ttk.Scrollbar(self, orient=tk.VERTICAL)
         treeScrollY.config(cursor="double_arrow")
