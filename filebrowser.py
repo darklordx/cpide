@@ -11,6 +11,10 @@ from dialog import (RenameDialog, NewDirectoryDialog,
                     InfoDialog, HelpDialog, MessageYesNoDialog, MessageDialog)
 
 
+# https://bugs.python.org/issue36468
+
+
+
 class FilebrowserFrame(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
@@ -30,10 +34,10 @@ class FilebrowserFrame(ttk.Frame):
         treeScrollY = ttk.Scrollbar(self, orient=tk.VERTICAL)
         treeScrollY.config(cursor="double_arrow")
         treeScrollY.pack(side=tk.RIGHT, fill=tk.Y)
-        
+
         self.tree = ttk.Treeview(self)
 
-        self.tree.tag_configure('pythonFile', background='black', foreground='green')
+        self.tree.tag_configure('pythonFile', background='green', foreground='green')
         self.tree.tag_configure('row', background='black', foreground='white')
         self.tree.tag_configure('folder', background='black', foreground='yellow')
         self.tree.tag_configure('subfolder', background='black', foreground='#448dc4')

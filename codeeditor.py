@@ -7,54 +7,17 @@ from tkinter import ttk
 from tkinter import font
 from configuration import Configuration
 import importlib
+from leftbar import *
 
-class TextLineNumbers(tk.Canvas):
-    '''
-        Canvas for Linenumbers
-    '''
-    def __init__(self, *args, **kwargs):
-        tk.Canvas.__init__(self, *args, **kwargs)
-        self.textwidget = None
-        self.font_size = 14
-        self.configFont()
-
-        
-    def configFont(self):
-        '''font for linenumbers'''
-        system = platform.system().lower()
-        if system == "windows":
-            self.font = font.Font(family='monospace', size=self.font_size)
-        elif system == "linux":
-            self.font = font.Font(family='monospace', size=self.font_size)
-        else:
-            self.font = font.Font(family='monospace', size=self.font_size)
-
-
-    def attach(self, text_widget):
-        self.textwidget = text_widget
-
-    def redraw(self, *args):
-        '''redraw line numbers'''
-        self.delete("all")
-
-        i = self.textwidget.index("@0,0")
-        while True :
-            dline= self.textwidget.dlineinfo(i)
-            if dline is None: break
-            y = dline[1]
-            linenum = str(i).split(".")[0]
-            self.create_text(1,y,anchor="nw", font=self.font, text=linenum, fill='white')
-            i = self.textwidget.index("%s+1line" % i)
-        
 
 class CodeEditor(tk.Text):
-    
     '''
         modified text Widget ... thanks to stackoverflow.com :)
     '''
+
     def __init__(self, *args, **kwargs):
         tk.Text.__init__(self, *args, **kwargs)
-        
+
         self.tk.eval('''
             proc widget_proxy {widget widget_command args} {
 
@@ -80,21 +43,22 @@ class CodeEditor(tk.Text):
             rename {widget} _{widget}
             interp alias {{}} ::{widget} {{}} widget_proxy {widget} _{widget}
         '''.format(widget=str(self)))
-        
+
         # global variables
         self.filename = None
         self.tab_width = 4
         self.font_size = 14
         self.linenumber = None
-        
+        self.complexity = None
+
         # make background black / foreground white
         self.config(insertbackground='#00FF00')
         self.config(background='#000000')
         self.config(foreground='#FFFFFF')
-        
+
         # color when selection is used
         self.tag_config("sel", background="#053582", foreground="white")
-        
+
         # config font
         self.configFont()
 
@@ -102,10 +66,10 @@ class CodeEditor(tk.Text):
         # see Dvlv/Tkinter-By-Example
         self.KEYWORDS_1 = ["False", "class", "finally", "is",
                            "None", "continue", "lambda", "True", "def", "from",
-                           "nonlocal", "and", "del", "global", "not", "as", 
+                           "nonlocal", "and", "del", "global", "not", "as",
                            "or", "yield", "assert", "import", "pass", "break",
                            "raise"]
-        self.KEYWORDS_FLOW = ["if", "else", "elif", "try", "except", "for",\
+        self.KEYWORDS_FLOW = ["if", "else", "elif", "try", "except", "for", \
                               "in", "while", "return", "with"]
 
         self.SPACES_REGEX = re.compile("^\s*")
@@ -114,20 +78,21 @@ class CodeEditor(tk.Text):
         self.NUMBER_REGEX = re.compile(r"\b(?=\(*)\d+\.?\d*(?=\)*\,*)\b")
         self.KEYWORDS_REGEX = re.compile("(?=\(*)(?<![a-z])(None|True|False)(?=\)*\,*)")
         self.SELF_REGEX = re.compile("(?=\(*)(?<![a-z])(self)(?=\)*\,*)")
-        self.FUNCTIONS_REGEX = re.compile("(?=\(*)(?<![a-z])(print|list|dict|set|int|str|float|input|range|open|tuple)(?=\()")
+        self.FUNCTIONS_REGEX = re.compile(
+            "(?=\(*)(?<![a-z])(print|list|dict|set|int|str|float|input|range|open|tuple)(?=\()")
         self.COMMENTS_REGEX = re.compile("#[^#\r\n]*")
-        
+
         self.REGEX_TO_TAG = {
-            self.STRING_REGEX_SINGLE : "string",
-            self.STRING_REGEX_DOUBLE : "string",
-            self.NUMBER_REGEX : "digit",
-            self.KEYWORDS_REGEX : "keywordcaps",
-            self.SELF_REGEX : "keyword1",
-            self.FUNCTIONS_REGEX : "keywordfunc",
-            self.COMMENTS_REGEX : "comment",
+            self.STRING_REGEX_SINGLE: "string",
+            self.STRING_REGEX_DOUBLE: "string",
+            self.NUMBER_REGEX: "digit",
+            self.KEYWORDS_REGEX: "keywordcaps",
+            self.SELF_REGEX: "keyword1",
+            self.FUNCTIONS_REGEX: "keywordfunc",
+            self.COMMENTS_REGEX: "comment",
         }
 
-        self.tag_config("keyword1", foreground="#448dc4")   
+        self.tag_config("keyword1", foreground="#448dc4")
         self.tag_config("keywordcaps", foreground="#CC7A00")
         self.tag_config("keywordflow", foreground="#00b402")
         self.tag_config("keywordfunc", foreground="#ddd313")
@@ -135,7 +100,7 @@ class CodeEditor(tk.Text):
         self.tag_config("digit", foreground="#ff4d4d")
         self.tag_config("string", foreground="#8e98a1")
         self.tag_config("comment", foreground="#6b6b6b")
-        
+
         # key bindings: 
         self.bind("<KeyRelease>", self.on_key_release, add='+')
         self.bind('<KeyRelease>', self.checkBraces, add='+')
@@ -148,15 +113,14 @@ class CodeEditor(tk.Text):
         self.bind('<Control-x>', self.cut)
         self.bind('<Control-c>', self.copy)
         self.bind('<Control-v>', self.paste)
-        
+
         # set autocompleteList
         # self.SetAutoCompleteList()
-        
+
         # other importan variables
         self.charstring = ''
         self.list = []
 
-    
     def tag_keywords(self, event=None, current_index=None):
         if not current_index:
             current_index = self.index(tk.INSERT)
@@ -192,11 +156,10 @@ class CodeEditor(tk.Text):
     def tag_all_lines(self):
         final_index = self.index(tk.END)
         final_line_number = int(final_index.split(".")[0])
-        
+
         for line_number in range(final_line_number):
             line_to_tag = ".".join([str(line_number), "0"])
             self.tag_keywords(None, line_to_tag)
-
 
     def number_of_leading_spaces(self, line):
         spaces = re.search(self.SPACES_REGEX, line)
@@ -216,12 +179,12 @@ class CodeEditor(tk.Text):
                 self.tag_add(tag, start_index, end_index)
 
     def on_key_release(self, event=None):
-        #print(event.keysym)
+        # print(event.keysym)
         if event.keysym in ("Up", "Down", "Left", "Right", "Shift_L", "Shift_R"):
             return
         else:
             self.tag_keywords()
-        
+
         # look for colon in last line 
         if event.keysym == 'Return':
             index = self.index(tk.INSERT).split(".")
@@ -229,7 +192,7 @@ class CodeEditor(tk.Text):
             actual_line = self.get("%d.%d" % (actual_line, 0), "%d.end" % (actual_line))
             last_line = int(index[0]) - 1
             last_line_text = self.get("%d.%d" % (last_line, 0), "%d.end" % (last_line))
-            
+
             # remove newline character to look after colon at end of line
             last_line_text = last_line_text.rstrip()
             # look if actual_line is only whitespace:
@@ -319,7 +282,6 @@ class CodeEditor(tk.Text):
     #     #print(self.autocompleteList)
     #     return
 
-
     # def updateAutocompleteEntry(self, event=None):
     #     '''
     #         make new list for the input from the user
@@ -361,8 +323,6 @@ class CodeEditor(tk.Text):
     #
     #         if len(self.list) == 3:
     #             self.entry.config(text=self.list[0])
-                            
-
 
     def configFont(self):
         '''
@@ -391,13 +351,13 @@ class CodeEditor(tk.Text):
             self.mark_set('insert', pos)
             self.tag_add("sel", pos, '%d.%d' % (int(x), int(y)))
             self.insert(tk.INSERT, self.list[0])
-            if self.tag_ranges("sel"):      # test if selection...
+            if self.tag_ranges("sel"):  # test if selection...
                 self.delete('sel.first', 'sel.last')
-            
+
         self.charstring == ''
         # self.entry.config(text='---')
         self.list = []
-        
+
         return 'break'
 
     def backtab(self, event):
@@ -410,7 +370,7 @@ class CodeEditor(tk.Text):
 
         chars = self.get("insert linestart", 'insert')
         if not self.tag_ranges("sel"):
-            if chars.isspace():     # only if there are whitespaces !
+            if chars.isspace():  # only if there are whitespaces !
                 if len(chars) >= 4:
                     self.delete("insert-4c", "insert")
                     return 'break'
@@ -422,39 +382,38 @@ class CodeEditor(tk.Text):
         # self.entry.config(text='---')
         self.list = []
         self.charstring = ''
-        
+
         index = self.index(tk.INSERT).split(".")
         line_no = int(index[0])
         # position cursor:
         pos = int(index[1])
-        
-        
+
         # self.updateAutoCompleteList()
-        
+
         if pos == 0:
             return
-        
-        line_text = self.get("%d.%d" % (line_no, 0),  "%d.end" % (line_no))
+
+        line_text = self.get("%d.%d" % (line_no, 0), "%d.end" % (line_no))
         text_only = line_text.lstrip(" ")
         no_of_spaces = len(line_text) - len(text_only)
-        
+
         # if enter was hit in a row that has leading spaces and spaces between
         # cursor and text 
         line_text_cursor = self.get("%d.%d" % (line_no, pos), "%d.end" % (line_no))
         spaces_betweeen = line_text_cursor.lstrip(" ")
         spaces_betweeen = spaces_betweeen.rstrip(" ")
         leading_spaces = len(line_text_cursor) - len(spaces_betweeen)
-        #print(leading_spaces)
-        
+        # print(leading_spaces)
+
         # if so: delete them for a nice editing feeling
         if leading_spaces:
             no_of_spaces -= leading_spaces
 
         spaces = '\n' + " " * no_of_spaces
-        
+
         self.insert(tk.INSERT, spaces)
-        self.see(self.index(tk.INSERT)) 
-        
+        self.see(self.index(tk.INSERT))
+
         # on Return ends:
         return 'break'
 
@@ -462,14 +421,14 @@ class CodeEditor(tk.Text):
         'check braces, paren, brackets '
         key = event.keycode
         sym = event.keysym
-        
+
         line = int(self.index(tk.INSERT).split('.')[0])
         line_text = self.get("%d.%d" % (line, 0), "%d.end" % (line))
-        
+
         self.tag_configure("braceHighlight", foreground="red")
         self.tag_configure('parenHighlight', foreground='red')
         self.tag_configure('bracketHighlight', foreground='red')
-        
+
         # paren ()
         if sym == 'parenleft':
             x = self.isBalancedParen(line_text)
@@ -477,24 +436,24 @@ class CodeEditor(tk.Text):
                 z = line_text.rfind('(')
             else:
                 z = False
-            
+
             if z:
-                self.tag_add("parenHighlight", "%d.%d"%(line, z), "%d.%d"%(line, z+1)) 
+                self.tag_add("parenHighlight", "%d.%d" % (line, z), "%d.%d" % (line, z + 1))
             else:
-                self.tag_remove('parenHighlight', "%d.0"%(line), '%d.end'%(line))
-        
+                self.tag_remove('parenHighlight', "%d.0" % (line), '%d.end' % (line))
+
         elif sym == 'parenright':
             x = self.isBalancedParen(line_text)
             if x == False:
                 z = line_text.rfind(')')
             else:
                 z = False
-            
+
             if z:
-                self.tag_add("parenHighlight", "%d.%d"%(line, z), "%d.%d"%(line, z+1)) 
+                self.tag_add("parenHighlight", "%d.%d" % (line, z), "%d.%d" % (line, z + 1))
             else:
-                self.tag_remove('parenHighlight', "%d.0"%(line), '%d.end'%(line))
-        
+                self.tag_remove('parenHighlight', "%d.0" % (line), '%d.end' % (line))
+
         # bracket []
         elif sym == 'bracketleft':
             x = self.isBalancedBracket(line_text)
@@ -502,24 +461,24 @@ class CodeEditor(tk.Text):
                 z = line_text.rfind('[')
             else:
                 z = False
-            
+
             if z:
-                self.tag_add("bracketHighlight", "%d.%d"%(line, z), "%d.%d"%(line, z+1)) 
+                self.tag_add("bracketHighlight", "%d.%d" % (line, z), "%d.%d" % (line, z + 1))
             else:
-                self.tag_remove('bracketHighlight', "%d.0"%(line), '%d.end'%(line))
-        
+                self.tag_remove('bracketHighlight', "%d.0" % (line), '%d.end' % (line))
+
         elif sym == 'bracketright':
             x = self.isBalancedBracket(line_text)
             if x == False:
                 z = line_text.rfind(']')
             else:
                 z = False
-            
+
             if z:
-                self.tag_add("bracketHighlight", "%d.%d"%(line, z), "%d.%d"%(line, z+1)) 
+                self.tag_add("bracketHighlight", "%d.%d" % (line, z), "%d.%d" % (line, z + 1))
             else:
-                self.tag_remove('bracketHighlight', "%d.0"%(line), '%d.end'%(line))
-        
+                self.tag_remove('bracketHighlight', "%d.0" % (line), '%d.end' % (line))
+
         # brace {}
         elif sym == 'braceleft':
             x = self.isBalancedBrace(line_text)
@@ -527,27 +486,23 @@ class CodeEditor(tk.Text):
                 z = line_text.rfind('{')
             else:
                 z = False
-            
+
             if z:
-                self.tag_add("braceHighlight", "%d.%d"%(line, z), "%d.%d"%(line, z+1)) 
+                self.tag_add("braceHighlight", "%d.%d" % (line, z), "%d.%d" % (line, z + 1))
             else:
-                self.tag_remove('braceHighlight', "%d.0"%(line), '%d.end'%(line))
-        
+                self.tag_remove('braceHighlight', "%d.0" % (line), '%d.end' % (line))
+
         elif sym == 'braceright':
             x = self.isBalancedBrace(line_text)
             if x == False:
                 z = line_text.rfind('}')
             else:
                 z = False
-            
+
             if z:
-                self.tag_add("braceHighlight", "%d.%d"%(line, z), "%d.%d"%(line, z+1)) 
+                self.tag_add("braceHighlight", "%d.%d" % (line, z), "%d.%d" % (line, z + 1))
             else:
-                self.tag_remove('braceHighlight', "%d.0"%(line), '%d.end'%(line))
-
-
-        else:
-            return
+                self.tag_remove('braceHighlight', "%d.0" % (line), '%d.end' % (line))
 
     def isBalancedParen(self, txt):
         braced = 0
@@ -577,8 +532,8 @@ class CodeEditor(tk.Text):
         return braced == 0
 
     def textPadPopUp(self, event):
-        menu = tk.Menu(self, tearoff=False, background='#000000',foreground='white',
-                activebackground='blue', activeforeground='white')
+        menu = tk.Menu(self, tearoff=False, background='#000000', foreground='white',
+                       activebackground='blue', activeforeground='white')
         menu.add_command(label="Undo", compound=tk.LEFT, command=self.undo)
         menu.add_command(label="Redo", compound=tk.LEFT, command=self.redo)
         menu.add_separator()
@@ -588,52 +543,52 @@ class CodeEditor(tk.Text):
         menu.add_separator()
         menu.add_command(label="Select All", compound=tk.LEFT, command=self.selectAll)
         menu.add_separator()
-        menu.add_command(label="Open Terminal", compound=tk.LEFT, command = self.terminal)
+        menu.add_command(label="Open Terminal", compound=tk.LEFT, command=self.terminal)
         menu.tk_popup(event.x_root, event.y_root, 0)
-    
+
     def undo(self, event=None):
         try:
             self.edit_undo()
             self.highlightAll()
         except:
             return
-    
+
     def redo(self, event=None):
         try:
             self.edit_redo()
             self.highlightAll()
         except:
             return
-    
+
     def cut(self, event=None):
         self.event_generate("<<Cut>>")
         self.tag_keywords()
         return 'break'
-    
+
     def copy(self, event=None):
         self.event_generate("<<Copy>>")
         self.tag_keywords()
         return 'break'
-        
+
     def paste(self, event=None):
         self.event_generate("<<Paste>>")
-        #self.tag_keywords()
+        # self.tag_keywords()
         self.highlightAll()
         return 'break'
-    
+
     def selectAll(self, event=None):
         self.tag_add('sel', '1.0', 'end')
-    
+
     def goto(self, event=None):
         pass
-    
+
     def terminal(self, event=None):
-        c = Configuration()     # -> in configuration.py
+        c = Configuration()  # -> in configuration.py
         system = c.getSystem()
         terminalCommand = c.getTerminal(system)
-        
+
         subprocess.call(terminalCommand, shell=True)
-    
+
     def highlightAll(self):
         final_index = self.index(tk.END)
         final_line_number = int(final_index.split(".")[0])
@@ -643,10 +598,9 @@ class CodeEditor(tk.Text):
             self.tag_keywords(None, line_to_tag)
 
 
-
 class CodeeditorFrame(ttk.Frame):
     '''
-        Codeeditor + Linenumber Frame
+        Codeeditor + Linenumber + Complexity Frame
     '''
 
     def __init__(self, master=None):
@@ -655,30 +609,32 @@ class CodeeditorFrame(ttk.Frame):
         self.initUI()
 
     def initUI(self):
-        
         # frame1
         frame1 = ttk.Frame(self)
         frame1.pack(fill=tk.BOTH, expand=True)
-        
+
         # autocompleteEntry (packed on bottom)
         # self.autocompleteEntry = ttk.Label(frame1, text='---', font=('Mono', 14))
         # self.autocompleteEntry.pack(side='bottom', fill='y')
-        
+
         # scrollbar y
         textScrollY = ttk.Scrollbar(frame1, orient=tk.VERTICAL)
         textScrollY.config(cursor="double_arrow")
         textScrollY.pack(side=tk.RIGHT, fill=tk.Y)
-        
+
         # in tkinter it is important what to pack first (!)
         self.linenumber = TextLineNumbers(frame1, width=45, bg='#000000')
         self.linenumber.pack(side="left", fill="y")
-        
+
+        self.complexity = TextTimeComplexity(frame1, width=45, bg='#000000')
+        self.complexity.pack(side="left", fill="y")
+
         # scrollbar x (packed on bottom)
         textScrollX = ttk.Scrollbar(frame1, orient=tk.HORIZONTAL)
         textScrollX.config(cursor="sb_h_double_arrow")
         textScrollX.pack(side=tk.BOTTOM, fill=tk.X)
 
-        self.textPad = CodeEditor(frame1, undo=True, maxundo=-1, 
+        self.textPad = CodeEditor(frame1, undo=True, maxundo=-1,
                                   autoseparators=True, wrap='none')
         self.textPad.filename = None
         self.textPad.pack(side=tk.TOP, expand=True, fill=tk.BOTH)
@@ -687,24 +643,29 @@ class CodeeditorFrame(ttk.Frame):
         textScrollX.config(command=self.textPad.xview)
         self.textPad.configure(yscrollcommand=textScrollY.set)
         self.textPad.configure(xscrollcommand=textScrollX.set)
+
         self.linenumber.attach(self.textPad)
+        self.complexity.attach(self.textPad)
 
 
         # self.textPad.entry = self.autocompleteEntry
         self.textPad.linenumber = self.linenumber
-        
+        self.textPad.complexity = self.complexity
+
+
+
         self.textPad.bind("<<Change>>", self.on_change)
         self.textPad.bind("<Configure>", self.on_change)
 
-
     def on_change(self, event):
         self.linenumber.redraw()
+        self.complexity.redraw()
 
 
 if __name__ == '__main__':
     root = tk.Tk()
     root['bg'] = 'black'
-    
+
     app = CodeeditorFrame()
-    
+
     app.mainloop()

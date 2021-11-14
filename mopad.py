@@ -20,7 +20,10 @@ class Mopad(ttk.Frame):
 
 
     def initUI(self):
-        
+
+        self.parent.wm_iconbitmap("images/Icon.ico")
+
+
         # PanedWindow
         self.panedWindow = ttk.PanedWindow(self, orient=tk.HORIZONTAL)
         self.panedWindow.pack(fill=tk.BOTH, expand=1)
@@ -51,7 +54,7 @@ class Mopad(ttk.Frame):
         self.style = ttk.Style()
         self.style.theme_use('clam')
         
-        self.style.configure("Treeview", background="black", 
+        self.style.configure("Treeview", background="black",
                 fieldbackground="black", foreground="white",
                 selectbackground='green')
         self.style.configure("Treeview.Heading", background="black", foreground='white', relief='flat')
@@ -151,6 +154,21 @@ class Mopad(ttk.Frame):
                         ('!focus', 'white')],
             activerelief=[('pressed', 'groove'),
                     ('!pressed', 'ridge')])
+
+        # https://bugs.python.org/issue36468
+        def fixed_map(option):
+            # Fix for setting text colour for Tkinter 8.6.9
+            # From: https://core.tcl.tk/tk/info/509cafafae
+            #
+            # Returns the style map for 'option' with any styles starting with
+            # ('!disabled', '!selected', ...) filtered out.
+
+            # style.map() returns an empty list for missing options, so this
+            # should be future-safe.
+            return [elm for elm in self.style.map('Treeview', query_opt=option) if
+                    elm[:2] != ('!disabled', '!selected')]
+
+        self.style.map('Treeview', foreground=fixed_map('foreground'), background=fixed_map('background'))
                 
 def center(win):
     # Center the root screen

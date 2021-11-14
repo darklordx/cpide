@@ -1,3 +1,4 @@
+import random
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
@@ -194,50 +195,28 @@ class NotebookFrame(ttk.Frame):
     def save(self, event=None):
         if not self.textPad:
             return
-            
         if not self.textPad.filename:
             self.saveAs()
-        
         filename = self.textPad.filename
-        
         if not filename:
             return
-        
-        try:
-            with open(filename, 'w') as f:
-                text = self.textPad.get("1.0",'end-1c')
-                f.write(text)
-        
-        except Exception as e:
-            MessageDialog(self, 'Error', '\n' + str(e) + '\n')
-        
-        # update textPad
-        self.textPad.filename = filename
-        
-        # update tab text
-        file = self.textPad.filename.split('/')[-1]
-        id = self.notebook.index(self.notebook.select())
-        self.notebook.tab(id, text=file)
-        
-        # generate tabChanged event (get new textPad, etc)
-        self.tabChanged()
-        self.filebrowserFrame.refreshTree()
-        
+        self._saveUpdate(filename)
+
     def saveAs(self, event=None):
         dialog = SaveFileDialog(self, "Save as")
         filename = dialog.filename
-        
         if not filename:
             return
-        
+        self._saveUpdate(filename)
+
+    def _saveUpdate(self, filename):
         try:
             with open(filename, 'w') as f:
-                text = self.textPad.get("1.0",'end-1c')
+                text = self.textPad.get("1.0", 'end-1c')
                 f.write(text)
-        
+
         except Exception as e:
             MessageDialog(self, 'Error', '\n' + str(e) + '\n')
-        
         # update textPad
         self.textPad.filename = filename
         
@@ -249,6 +228,14 @@ class NotebookFrame(ttk.Frame):
         # generate tabChanged event (get new textPad, etc)
         self.tabChanged()
         self.filebrowserFrame.refreshTree()
+
+    def quicksave(self, event=None):
+        if not self.textPad.filename:
+            # QUICK RUN
+            random_hex = '%08X' % random.randint(0, 256 ** 4 - 1)
+            self.textPad.filename = f"tmp{random_hex}.py"
+        self.save()
+        return self.textPad.filename
 
     def printer(self, event=None):
         # print file to html
@@ -316,16 +303,12 @@ class NotebookFrame(ttk.Frame):
     def settings(self, event=None):
         dialog = SettingsDialog(self)
 
+
     def run(self, event=None):
         if not self.textPad:
             return
-        
+        self.quicksave()
         filepath = self.textPad.filename
-        
-        if not filepath:
-            return
-        
-        self.save()
 
         file = filepath.split('/')[-1]
     
@@ -377,31 +360,31 @@ class NotebookFrame(ttk.Frame):
             self.textPad.mark_set('insert', '1.0')
             self.textPad.see(tk.INSERT)
             self.textPad.focus()
-            self.setEndMessage(400)
+            # self.setEndMessage(400)
             self.searchBox.focus()
             return
 
-    def setEndMessage(self, seconds):
-            pathList = __file__.replace('\\', '/')
-            pathList = __file__.split('/')[:-1]
-        
-            self.dir = ''
-            for item in pathList:
-                self.dir += item + '/'
-
-            canvas = tk.Canvas(self.textPad, width=64, height=64)
-            x = self.textPad.winfo_width() / 2
-            y = self.textPad.winfo_height() / 2
-
-            canvas.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
-            image = tk.PhotoImage(file = self.dir + 'images/last.png')
-            canvas.create_image(0, 0,  anchor=tk.NW, image=image)
-            
-            self.textPad.update()
-            self.after(seconds, self.textPad.entry.config(text='---'))
-            
-            canvas.destroy()
-            self.textPad.update()
+    # def setEndMessage(self, seconds):
+    #         # pathList = __file__.replace('\\', '/')
+    #         pathList = __file__.split('/')[:-1]
+    #
+    #         self.dir = ''
+    #         for item in pathList:
+    #             self.dir += item + '/'
+    #
+    #         canvas = tk.Canvas(self.textPad, width=64, height=64)
+    #         # x = self.textPad.winfo_width() / 2
+    #         # y = self.textPad.winfo_height() / 2
+    #
+    #         canvas.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+    #         image = tk.PhotoImage(file = self.dir + 'images/last.png')
+    #         canvas.create_image(0, 0,  anchor=tk.NW, image=image)
+    #
+    #         self.textPad.update()
+    #         self.after(seconds, self.textPad.entry.config(text='---'))
+    #
+    #         canvas.destroy()
+    #         self.textPad.update()
 
 
     def tabChanged(self, event=None):
