@@ -8,6 +8,7 @@ from tkinter import font
 from configuration import Configuration
 import importlib
 from leftbar import *
+from theme import CodeEditorColors, KeywordColors
 
 
 class CodeEditor(tk.Text):
@@ -52,9 +53,7 @@ class CodeEditor(tk.Text):
         self.complexity = None
 
         # make background black / foreground white
-        self.config(insertbackground='#00FF00')
-        self.config(background='#000000')
-        self.config(foreground='#FFFFFF')
+        self.config(**CodeEditorColors)
 
         # color when selection is used
         self.tag_config("sel", background="#053582", foreground="white")
@@ -69,8 +68,8 @@ class CodeEditor(tk.Text):
                            "nonlocal", "and", "del", "global", "not", "as",
                            "or", "yield", "assert", "import", "pass", "break",
                            "raise"]
-        self.KEYWORDS_FLOW = ["if", "else", "elif", "try", "except", "for", \
-                              "in", "while", "return", "with"]
+        self.KEYWORDS_FLOW = ["if", "else", "elif", "try", "except", "in", "return", "with"]
+        self.KEYWORDS_LOOP = ["for", "while"]
 
         self.SPACES_REGEX = re.compile("^\s*")
         self.STRING_REGEX_SINGLE = re.compile("'[^'\r\n]*'")
@@ -80,7 +79,8 @@ class CodeEditor(tk.Text):
         self.SELF_REGEX = re.compile("(?=\(*)(?<![a-z])(self)(?=\)*\,*)")
         self.FUNCTIONS_REGEX = re.compile(
             "(?=\(*)(?<![a-z])(print|list|dict|set|int|str|float|input|range|open|tuple)(?=\()")
-        self.COMMENTS_REGEX = re.compile("#[^#\r\n]*")
+        self.COMMENTS_REGEX = re.compile("#[^#\r\n]+")
+        self.FLAG_REGEX = re.compile("##[^#\r\n]+")
 
         self.REGEX_TO_TAG = {
             self.STRING_REGEX_SINGLE: "string",
@@ -90,16 +90,10 @@ class CodeEditor(tk.Text):
             self.SELF_REGEX: "keyword1",
             self.FUNCTIONS_REGEX: "keywordfunc",
             self.COMMENTS_REGEX: "comment",
+            self.FLAG_REGEX: "flagcomment"
         }
-
-        self.tag_config("keyword1", foreground="#448dc4")
-        self.tag_config("keywordcaps", foreground="#CC7A00")
-        self.tag_config("keywordflow", foreground="#00b402")
-        self.tag_config("keywordfunc", foreground="#ddd313")
-        self.tag_config("decorator", foreground="#298fb5")
-        self.tag_config("digit", foreground="#ff4d4d")
-        self.tag_config("string", foreground="#8e98a1")
-        self.tag_config("comment", foreground="#6b6b6b")
+        for k in KeywordColors:
+            self.tag_config(k, foreground=KeywordColors[k])
 
         # key bindings: 
         self.bind("<KeyRelease>", self.on_key_release, add='+')
@@ -120,6 +114,12 @@ class CodeEditor(tk.Text):
         # other importan variables
         self.charstring = ''
         self.list = []
+
+        # Here is where we will place all the complexity features,
+        # until I figure out a good place to put it.
+        # This way, the Complexity leftbar can access the important tokens without
+        # Reaching into the actual code.
+        self.relevant_tokens = []
 
     def tag_keywords(self, event=None, current_index=None):
         if not current_index:
@@ -148,6 +148,8 @@ class CodeEditor(tk.Text):
                 self.tag_add("keyword1", start_index, end_index)
             elif stripped_word in self.KEYWORDS_FLOW:
                 self.tag_add("keywordflow", start_index, end_index)
+            elif stripped_word in self.KEYWORDS_LOOP:
+                self.tag_add("keywordloop", start_index, end_index)
             elif stripped_word.startswith("@"):
                 self.tag_add("decorator", start_index, end_index)
 
@@ -160,6 +162,26 @@ class CodeEditor(tk.Text):
         for line_number in range(final_line_number):
             line_to_tag = ".".join([str(line_number), "0"])
             self.tag_keywords(None, line_to_tag)
+
+        # Debug lol
+        # self.get_complexity_tokens()
+        # print(self.tag_ranges("keywordflow"))
+
+    def get_complexity_tokens(self):
+        """
+        This gets all lines relevant to complexity analysis to be fed into leftbar.
+        """
+        tags = self.tag_ranges("keywordloop")
+        # print(tags)
+        x = set(int(str(i).split(".")[0]) for i in tags)
+        # print(x)
+        res = {}
+        for line_number in x:
+            line_beginning = f"{line_number}.0"
+            line_text = self.get(line_beginning, line_beginning + " lineend")
+            res.update({line_number: line_text})
+        # print(res)
+        return res
 
     def number_of_leading_spaces(self, line):
         spaces = re.search(self.SPACES_REGEX, line)
@@ -549,14 +571,16 @@ class CodeEditor(tk.Text):
     def undo(self, event=None):
         try:
             self.edit_undo()
-            self.highlightAll()
+            self.tag_all_lines()
+            # self.highlightAll()
         except:
             return
 
     def redo(self, event=None):
         try:
             self.edit_redo()
-            self.highlightAll()
+            self.tag_all_lines()
+            # self.highlightAll()
         except:
             return
 
@@ -573,7 +597,8 @@ class CodeEditor(tk.Text):
     def paste(self, event=None):
         self.event_generate("<<Paste>>")
         # self.tag_keywords()
-        self.highlightAll()
+        self.tag_all_lines()
+        # self.highlightAll()
         return 'break'
 
     def selectAll(self, event=None):
@@ -589,13 +614,14 @@ class CodeEditor(tk.Text):
 
         subprocess.call(terminalCommand, shell=True)
 
-    def highlightAll(self):
-        final_index = self.index(tk.END)
-        final_line_number = int(final_index.split(".")[0])
-
-        for line_number in range(final_line_number):
-            line_to_tag = ".".join([str(line_number), "0"])
-            self.tag_keywords(None, line_to_tag)
+    # Afaik this is useless??
+    # def highlightAll(self):
+    #     final_index = self.index(tk.END)
+    #     final_line_number = int(final_index.split(".")[0])
+    #
+    #     for line_number in range(final_line_number):
+    #         line_to_tag = ".".join([str(line_number), "0"])
+    #         self.tag_keywords(None, line_to_tag)
 
 
 class CodeeditorFrame(ttk.Frame):
@@ -626,7 +652,7 @@ class CodeeditorFrame(ttk.Frame):
         self.linenumber = TextLineNumbers(frame1, width=45, bg='#000000')
         self.linenumber.pack(side="left", fill="y")
 
-        self.complexity = TextTimeComplexity(frame1, width=45, bg='#000000')
+        self.complexity = TextTimeComplexity(frame1, width=200, bg='#000000')
         self.complexity.pack(side="left", fill="y")
 
         # scrollbar x (packed on bottom)
@@ -647,12 +673,9 @@ class CodeeditorFrame(ttk.Frame):
         self.linenumber.attach(self.textPad)
         self.complexity.attach(self.textPad)
 
-
         # self.textPad.entry = self.autocompleteEntry
         self.textPad.linenumber = self.linenumber
         self.textPad.complexity = self.complexity
-
-
 
         self.textPad.bind("<<Change>>", self.on_change)
         self.textPad.bind("<Configure>", self.on_change)

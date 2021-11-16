@@ -19,12 +19,18 @@ class LeftBar(tk.Canvas):
     def __init__(self, *args, **kwargs):
         tk.Canvas.__init__(self, *args, **kwargs)
         self.textwidget = None
-        self.font_size = 14
+        # self.font_size = 14
         self.configFont()
 
     def configFont(self):
         '''font for linenumbers'''
-        self.font = font.Font(family='monospace', size=self.font_size)
+        if self.textwidget is None:
+            self.font = font.Font(family='monospace', size=14)
+        else:
+            # Binds the font size to the textwidget's font size; it is stupid to use a second variable.
+            self.font = font.Font(family='monospace', size=self.textwidget.font_size)
+
+        # self.font = font.Font(family='monospace', size=self.font_size)
         # system = platform.system().lower()
         # if system == "windows":
         #     self.font = font.Font(family='monospace', size=self.font_size)
@@ -46,17 +52,85 @@ class TextTimeComplexity(LeftBar):
         Canvas for Time Complexity Display
     '''
 
+    def range_extract(self, s):
+        if "range(" in s:
+            # Todo: Slap a regex on this lmao
+            start = s.index("range(") + len("range(")
+            s = s[start:]
+            if ")" in s:
+                s = s[:s.index(")")].split(",")
+                if all(i.isdigit() for i in s) and 1<=len(s)<=3:
+                    start, end, jump = 0, 1, 1
+                    # print("here")
+                    if len(s) == 1:
+                        end = int(s[0])
+                    elif len(s) == 2:
+                        start, end = map(int, s)
+                    else:
+                        start, end, jump = map(int, s)
+                    return (end - start) // jump
+        return None
+
+    def flag_check(self, s):
+        if "##" in s:
+            s = s[s.rindex("##") + 2:].strip()
+            if s.isdigit():
+                return int(s)
+        return None
+
+    def calculate_complexity(self):
+        tokens: dict = self.textwidget.get_complexity_tokens()
+        complexity = {}
+        linenums = tokens.keys()
+        recurrences = [1]
+
+        for i in linenums:
+            t: str = tokens[i]
+            mult = None
+            res = ""
+            if "for" in t:
+                res += "FOR "
+                s = "".join(t.split())
+                mult = self.range_extract(s)
+            elif "while" in t:
+                res += "WHILE "
+            else:
+                mult = 1 # There is no loop here...
+            fmult = self.flag_check(t)
+            if fmult:
+                mult = fmult #flag check overrides.
+            if not mult:
+                res += "(?) "
+                mult = 1
+            depth = (len(t) - len(t.lstrip(' ')))//4
+            recurrences = recurrences[:depth+1]
+            next = recurrences[-1]*mult
+            recurrences.append(next)
+            res+= str(next)
+            complexity.update({i: res})
+        return complexity
+
+
+
+
     def redraw(self, *args):
         """redraw line numbers"""
         self.delete("all")
+        complexity = self.calculate_complexity()
 
         i = self.textwidget.index("@0,0")
+        # i is just the line numbers,
+        # but it only iterates over the line numbers
+        # shown on the screen
+        # print(tokens)
         while True:
             dline = self.textwidget.dlineinfo(i)
             if dline is None:
                 break
-            y = dline[1]
-            self.create_text(1, y, anchor="nw", font=self.font, text="asdf", fill='#FF00FF')
+            linenum = int(i.split(".")[0])
+            if linenum in complexity.keys():
+                y = dline[1]
+                self.create_text(10, y, anchor="nw", font=self.font, text=complexity[linenum], fill='#FF00FF')
             i = self.textwidget.index("%s+1line" % i)
 
 
@@ -75,7 +149,7 @@ class TextLineNumbers(LeftBar):
             if dline is None:
                 break
             y = dline[1]
-            linenum = str(i).split(".")[0]
-            self.create_text(1, y, anchor="nw", font=self.font, text=linenum, fill='white')
+            linenum = " "+str(i).split(".")[0]
+            self.create_text(40, y, anchor="ne", font=self.font, text=linenum, fill='white')
             i = self.textwidget.index("%s+1line" % i)
 

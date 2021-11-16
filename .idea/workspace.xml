@@ -28,6 +28,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="restartRequiresConfirmation" value="false" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.folding" />
   </component>
   <component name="RunManager" selected="Python.mopad">
     <configuration name="codeeditor" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
@@ -51,7 +52,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="configuration" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="dialog" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="mopad" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -63,7 +64,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/configuration.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/dialog.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -138,10 +139,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.mopad" />
-        <item itemvalue="Python.filebrowser" />
         <item itemvalue="Python.codeeditor" />
         <item itemvalue="Python.leftbar" />
-        <item itemvalue="Python.configuration" />
+        <item itemvalue="Python.dialog" />
+        <item itemvalue="Python.filebrowser" />
       </list>
     </recent_temporary>
   </component>
@@ -159,33 +160,43 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1899" height="126" key="GridCell.Tab.0.bottom" timestamp="1636865131653">
+    <state width="1899" height="125" key="GridCell.Tab.0.bottom" timestamp="1637095221647">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
-    <state width="1899" height="126" key="GridCell.Tab.0.bottom/0.0.1920.1080@0.0.1920.1080" timestamp="1636865131653" />
-    <state width="1899" height="126" key="GridCell.Tab.0.center" timestamp="1636865131652">
+    <state width="1899" height="125" key="GridCell.Tab.0.bottom/0.0.1920.1080@0.0.1920.1080" timestamp="1637095221647" />
+    <state width="3419" height="182" key="GridCell.Tab.0.bottom/1520.1440.1920.1080/0.0.3440.1440/3440.0.1920.1080@0.0.3440.1440" timestamp="1636950454900" />
+    <state width="1899" height="125" key="GridCell.Tab.0.center" timestamp="1637095221647">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
-    <state width="1899" height="126" key="GridCell.Tab.0.center/0.0.1920.1080@0.0.1920.1080" timestamp="1636865131652" />
-    <state width="1899" height="126" key="GridCell.Tab.0.left" timestamp="1636865131652">
+    <state width="1899" height="125" key="GridCell.Tab.0.center/0.0.1920.1080@0.0.1920.1080" timestamp="1637095221647" />
+    <state width="3419" height="182" key="GridCell.Tab.0.center/1520.1440.1920.1080/0.0.3440.1440/3440.0.1920.1080@0.0.3440.1440" timestamp="1636950454900" />
+    <state width="1899" height="125" key="GridCell.Tab.0.left" timestamp="1637095221647">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
-    <state width="1899" height="126" key="GridCell.Tab.0.left/0.0.1920.1080@0.0.1920.1080" timestamp="1636865131652" />
-    <state width="1899" height="126" key="GridCell.Tab.0.right" timestamp="1636865131653">
+    <state width="1899" height="125" key="GridCell.Tab.0.left/0.0.1920.1080@0.0.1920.1080" timestamp="1637095221647" />
+    <state width="3419" height="182" key="GridCell.Tab.0.left/1520.1440.1920.1080/0.0.3440.1440/3440.0.1920.1080@0.0.3440.1440" timestamp="1636950454900" />
+    <state width="1899" height="125" key="GridCell.Tab.0.right" timestamp="1637095221647">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
-    <state width="1899" height="126" key="GridCell.Tab.0.right/0.0.1920.1080@0.0.1920.1080" timestamp="1636865131653" />
-    <state x="656" y="363" key="com.intellij.ide.util.TipDialog" timestamp="1636858548150">
+    <state width="1899" height="125" key="GridCell.Tab.0.right/0.0.1920.1080@0.0.1920.1080" timestamp="1637095221647" />
+    <state width="3419" height="182" key="GridCell.Tab.0.right/1520.1440.1920.1080/0.0.3440.1440/3440.0.1920.1080@0.0.3440.1440" timestamp="1636950454900" />
+    <state x="1221" y="362" key="SettingsEditor" timestamp="1636940581699">
+      <screen x="0" y="0" width="3440" height="1440" />
+    </state>
+    <state x="1221" y="362" key="SettingsEditor/1520.1440.1920.1080/0.0.3440.1440/3440.0.1920.1080@0.0.3440.1440" timestamp="1636940581699" />
+    <state x="656" y="363" key="com.intellij.ide.util.TipDialog" timestamp="1637093289805">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
-    <state x="656" y="363" key="com.intellij.ide.util.TipDialog/0.0.1920.1080@0.0.1920.1080" timestamp="1636858548150" />
+    <state x="656" y="363" key="com.intellij.ide.util.TipDialog/0.0.1920.1080@0.0.1920.1080" timestamp="1637093289805" />
+    <state x="1175" y="484" key="com.intellij.ide.util.TipDialog/1520.1440.1920.1080/0.0.3440.1440/3440.0.1920.1080@0.0.3440.1440" timestamp="1636940413519" />
     <state x="603" y="154" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1636862857149">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
     <state x="603" y="154" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.0.1920.1080@0.0.1920.1080" timestamp="1636862857149" />
-    <state x="623" y="235" width="672" height="678" key="search.everywhere.popup" timestamp="1636862526414">
+    <state x="623" y="235" width="672" height="678" key="search.everywhere.popup" timestamp="1637094404806">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
-    <state x="623" y="235" width="672" height="678" key="search.everywhere.popup/0.0.1920.1080@0.0.1920.1080" timestamp="1636862526414" />
+    <state x="623" y="235" width="672" height="678" key="search.everywhere.popup/0.0.1920.1080@0.0.1920.1080" timestamp="1637094404806" />
+    <state x="1116" y="313" width="1204" height="904" key="search.everywhere.popup/1520.1440.1920.1080/0.0.3440.1440/3440.0.1920.1080@0.0.3440.1440" timestamp="1636940464439" />
   </component>
 </project>

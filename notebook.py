@@ -1,3 +1,12 @@
+"""
+The Notebook is the entire RHS of the screen.
+It contains multiple Code Editors.
+The below code does these things:
+ - All of the buttons in the top row.
+ - Switching between Code Editors.
+ - The Tooltips give little pop-ups when looking at widgets.
+"""
+
 import random
 import tkinter as tk
 from tkinter import ttk
@@ -277,28 +286,30 @@ class NotebookFrame(ttk.Frame):
     def redo(self, event=None):
         if self.textPad:
             self.textPad.redo()
-        
+
+    def configFont(self):
+        """
+        Propagates font size to textpad and leftbars.
+        """
+        self.textPad.configFont()
+        self.textPad.linenumber.configFont()
+        self.textPad.linenumber.redraw()
+        self.textPad.complexity.configFont()
+        self.textPad.complexity.redraw()
+
     def zoomIn(self, event=None):
         if not self.textPad:
             return
         if self.textPad.font_size < 30:
             self.textPad.font_size += 1
-            self.textPad.configFont()
-            
-            self.textPad.linenumber.font_size +=1
-            self.textPad.linenumber.configFont()
-            self.textPad.linenumber.redraw()
+            self.configFont()
 
     def zoomOut(self, event=None):
         if not self.textPad:
             return
         if self.textPad.font_size > 5:
             self.textPad.font_size -= 1
-            self.textPad.configFont()
-            
-            self.textPad.linenumber.font_size -=1
-            self.textPad.linenumber.configFont()
-            self.textPad.linenumber.redraw()
+            self.configFont()
 
     def settings(self, event=None):
         dialog = SettingsDialog(self)
@@ -487,7 +498,7 @@ class CreateToolTip():
         self.tw.wm_overrideredirect(True)
         self.tw.wm_geometry("+%d+%d" % (x, y))
         label = tk.Label(self.tw, text=self.text, justify='left',
-                       background="#000000", foreground='yellow',
+                       background="#000000", foreground='#5252FF',
                        relief='solid', borderwidth=1,
                        wraplength = self.wraplength)
         label.pack(ipadx=1)
