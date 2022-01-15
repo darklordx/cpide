@@ -14,8 +14,6 @@ class LeftBar(tk.Canvas):
         Abstract Canvas for LeftBar
     '''
 
-
-
     def __init__(self, *args, **kwargs):
         tk.Canvas.__init__(self, *args, **kwargs)
         self.textwidget = None
@@ -59,7 +57,7 @@ class TextTimeComplexity(LeftBar):
             s = s[start:]
             if ")" in s:
                 s = s[:s.index(")")].split(",")
-                if all(i.isdigit() for i in s) and 1<=len(s)<=3:
+                if all(i.isdigit() for i in s) and 1 <= len(s) <= 3:
                     start, end, jump = 0, 1, 1
                     # print("here")
                     if len(s) == 1:
@@ -79,15 +77,18 @@ class TextTimeComplexity(LeftBar):
         return None
 
     def calculate_complexity(self):
-        tokens: dict = self.textwidget.get_complexity_tokens()
-        complexity = {}
-        linenums = tokens.keys()
+        lines = self.textwidget.get_complexity_tokens()
+        lines = lines.split("\n")
+        # print(lines[0])
+
+        complexity = ["" for _ in range(len(lines))]
         recurrences = [1]
 
-        for i in linenums:
-            t: str = tokens[i]
+        i: int
+        t: str
+        for i, t in enumerate(lines):
             mult = None
-            res = ""
+            res: str = ""
             if "for" in t:
                 res += "FOR "
                 s = "".join(t.split())
@@ -95,23 +96,21 @@ class TextTimeComplexity(LeftBar):
             elif "while" in t:
                 res += "WHILE "
             else:
-                mult = 1 # There is no loop here...
+                mult = 1  # There is no loop here...
+                continue  # TODO: Implement many more things :D
             fmult = self.flag_check(t)
             if fmult:
-                mult = fmult #flag check overrides.
+                mult = fmult  # flag check overrides.
             if not mult:
                 res += "(?) "
                 mult = 1
-            depth = (len(t) - len(t.lstrip(' ')))//4
-            recurrences = recurrences[:depth+1]
-            next = recurrences[-1]*mult
+            depth = (len(t) - len(t.lstrip(' '))) // 4
+            recurrences = recurrences[:depth + 1]
+            next = recurrences[-1] * mult
             recurrences.append(next)
-            res+= str(next)
-            complexity.update({i: res})
+            res += str(next)
+            complexity[i + 1] = res
         return complexity
-
-
-
 
     def redraw(self, *args):
         """redraw line numbers"""
@@ -128,7 +127,8 @@ class TextTimeComplexity(LeftBar):
             if dline is None:
                 break
             linenum = int(i.split(".")[0])
-            if linenum in complexity.keys():
+            # print(linenum)
+            if complexity[linenum] != "":
                 y = dline[1]
                 self.create_text(10, y, anchor="nw", font=self.font, text=complexity[linenum], fill='#FF00FF')
             i = self.textwidget.index("%s+1line" % i)
@@ -149,7 +149,6 @@ class TextLineNumbers(LeftBar):
             if dline is None:
                 break
             y = dline[1]
-            linenum = " "+str(i).split(".")[0]
+            linenum = " " + str(i).split(".")[0]
             self.create_text(40, y, anchor="ne", font=self.font, text=linenum, fill='white')
             i = self.textwidget.index("%s+1line" % i)
-

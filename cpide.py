@@ -1,6 +1,6 @@
 """
-The Mopad is the entire frame.
-Here is the layout of the Mopad:
+The CPIDE is the entire frame.
+Here is the layout of the CPIDE:
     On the LHS, there is the File Browser (filebrowswer.py)
     On the RHS, there is the Notebook (notebook.py)
         On the top of the Notebook, there are widgets (notebook.py)
@@ -19,7 +19,7 @@ from notebook import NotebookFrame
 from filebrowser import FilebrowserFrame
 
 
-class Mopad(ttk.Frame):
+class CPIDE(ttk.Frame):
     '''
         Main App
     '''
@@ -78,11 +78,11 @@ class Mopad(ttk.Frame):
             return [elm for elm in self.style.map('Treeview', query_opt=option) if
                     elm[:2] != ('!disabled', '!selected')]
 
+        self.style.configure("Treeview", background="yellow",
+                             fieldbackground="black", foreground="black",
+                             selectbackground='green')
         self.style.map('Treeview', foreground=fixed_map('foreground'), background=fixed_map('background'))
 
-        self.style.configure("Treeview", background="black",
-                             fieldbackground="black", foreground="white",
-                             selectbackground='green')
         self.style.configure("Treeview.Heading", background="black", foreground='white', relief='flat')
         self.style.map('Treeview.Heading',
                        foreground=[('pressed', 'white'),
@@ -199,7 +199,7 @@ if __name__ == '__main__':
     root = tk.Tk()
     # root['bg'] = 'black'
 
-    app = Mopad(root)
+    app = CPIDE(root)
     app.master.title('MoPad - Python IDE')
     app.master.minsize(width=800, height=600)
 

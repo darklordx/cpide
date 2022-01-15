@@ -312,16 +312,16 @@ class HelpDialog(Dialog):
         # Tab What is
         ##
         tab1 = ttk.Frame(tabControl)
-        tabControl.add(tab1, text='What is CrossViper ?')
+        tabControl.add(tab1, text='What is CPIDE?')
         tabControl.pack(expand=1, fill='both')
         
         readonlyWhatIs = tkst.ScrolledText(tab1, bg='black', fg='white', wrap='none')
         readonlyWhatIs.pack()
         
         textWhatIs = '''
-        MoPad - Morten's cross platform Python Pad
+        CPIDE - Competitive Programming IDE
         
-        Mopad is an Editor for the "Python Programming Language".
+        CPIDE is an Editor for the "Python Programming Language".
         
         It shows the "python source code" colored (syntax highlighting) and 
         helps you to code with its own auto-complete function.
@@ -330,7 +330,7 @@ class HelpDialog(Dialog):
         Python on your OS)
         It can also run the "Python Interpreter" and a terminal window 
         (specific for your current OS) -> this can be modified in the 
-        settings (-> which where saved in mopad.ini => it's a text file)
+        settings (-> which where saved in cpide.ini => it's a text file)
         
         On the bottom-right, you find two buttons => one for searching the 
         current file and the other to analyse the code 
@@ -365,7 +365,7 @@ class HelpDialog(Dialog):
         Save File       -       Ctrl + S
         SaveAs          -       Ctrl + Shift + S
         Print to File   -       Ctrl + P
-        Quit Mopad      -       Alt + F4
+        Quit CPIDE      -       Alt + F4
         Undo            -       Ctrl + Z
         Redo            -       Ctrl + Shift + Z
         Copy            -       Ctrl + C
@@ -398,7 +398,7 @@ class HelpDialog(Dialog):
         readonlyAbout.pack()
 
         textAbout = '''
-        MoPad - Morten's cross platform Python Pad
+        CPIDE - Competitive Programming IDE
         
         
         Programmed 2019 by morbidMo
@@ -414,7 +414,7 @@ class HelpDialog(Dialog):
         no guarantee of using it - it's your own risk :)
         
         
-        Mopad was completely coded in Python just using tkinter
+        CPIDE was completely coded in Python just using tkinter
         
         
         '''
@@ -711,7 +711,7 @@ class SettingsDialog(Dialog):
         base = os.path.dirname(thisFile)
         base = self.CheckPath(base)
 
-        iniPath = base + "/mopad.ini"
+        iniPath = base + "/cpide.ini"
         with open(iniPath, 'w') as f:
             config.write(f)
         

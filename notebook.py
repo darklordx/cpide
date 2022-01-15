@@ -41,6 +41,8 @@ class NotebookFrame(ttk.Frame):
         
         self.buttonFrame.pack(side=tk.TOP, fill=tk.X)
         self.notebook.pack(side=tk.TOP, expand=True, fill=tk.BOTH)
+
+        self.newCP()
         self.new()
     
     def initButtons(self):
@@ -76,18 +78,18 @@ class NotebookFrame(ttk.Frame):
         printButton.image = printIcon
         printButton.pack(side=tk.LEFT)
         printButton_ttp = CreateToolTip(printButton, "Print to HTML-File")
-
-        undoIcon = tk.PhotoImage(file=HOMEPATH + 'images/undo.png')
-        undoButton = ttk.Button(self.buttonFrame, image=undoIcon, command=self.undo)
-        undoButton.image = undoIcon
-        undoButton.pack(side=tk.LEFT)
-        undoButton_ttp = CreateToolTip(undoButton, 'Undo')
-
-        redoIcon = tk.PhotoImage(file=HOMEPATH + 'images/redo.png')
-        redoButton = ttk.Button(self.buttonFrame, image=redoIcon, command=self.redo)
-        redoButton.image = redoIcon
-        redoButton.pack(side=tk.LEFT)
-        redoButton_ttp = CreateToolTip(redoButton, "Redo")
+        #
+        # undoIcon = tk.PhotoImage(file=HOMEPATH + 'images/undo.png')
+        # undoButton = ttk.Button(self.buttonFrame, image=undoIcon, command=self.undo)
+        # undoButton.image = undoIcon
+        # undoButton.pack(side=tk.LEFT)
+        # undoButton_ttp = CreateToolTip(undoButton, 'Undo')
+        #
+        # redoIcon = tk.PhotoImage(file=HOMEPATH + 'images/redo.png')
+        # redoButton = ttk.Button(self.buttonFrame, image=redoIcon, command=self.redo)
+        # redoButton.image = redoIcon
+        # redoButton.pack(side=tk.LEFT)
+        # redoButton_ttp = CreateToolTip(redoButton, "Redo")
 
         zoomInIcon = tk.PhotoImage(file=HOMEPATH + 'images/zoomIn.png')
         zoomInButton = ttk.Button(self.buttonFrame, image=zoomInIcon, command=self.zoomIn)
@@ -106,6 +108,13 @@ class NotebookFrame(ttk.Frame):
         settingsButton.image = settingsIcon
         settingsButton.pack(side=tk.LEFT)
         settingsButton_ttp = CreateToolTip(settingsButton, "Show Settings")
+
+        runAgainstIcon = tk.PhotoImage(file=HOMEPATH + 'images/run.png')
+        runAgainstButton = ttk.Button(self.buttonFrame, image=runAgainstIcon, command=self.runAgainst)
+        runAgainstButton.image = runAgainstIcon
+        runAgainstButton.pack(side=tk.RIGHT)
+        runAgainstButton_ttp = CreateToolTip(runAgainstButton, "Run Against Input File")
+
 
         runIcon = tk.PhotoImage(file=HOMEPATH + 'images/run.png')
         runButton = ttk.Button(self.buttonFrame, image=runIcon, command=self.run)
@@ -149,7 +158,23 @@ class NotebookFrame(ttk.Frame):
         self.searchBox.bind('<Return>', self.search)
         self.searchBox.pack(side=tk.RIGHT, padx=5)
     
-        
+    def newCP(self):
+        try:
+            open("in.txt")
+        except FileNotFoundError:
+            with open("in.txt", "w") as f:
+                f.write("This is your input file. Write the desired input here.")
+        self.openFile("in.txt")
+
+        try:
+            open("res.txt")
+        except FileNotFoundError:
+            with open("res.txt", "w") as f:
+                f.write("This is your result file. Write the desired output here. "
+                        "The real output will be written to out.txt")
+        self.openFile("res.txt")
+
+
     def new(self, event=None):
         self.codeeditorFrame = CodeeditorFrame(self)
         self.notebook.add(self.codeeditorFrame, text='noname')
@@ -197,6 +222,38 @@ class NotebookFrame(ttk.Frame):
         # update autocompleteList from codeeditor
         # self.textPad.updateAutoCompleteList()
         self.filebrowserFrame.refreshTree()
+
+    def openFile(self, filename, event=None):
+        self.codeeditorFrame = CodeeditorFrame(self)
+
+
+        self.notebook.add(self.codeeditorFrame, text=filename)
+        self.frameName = self.notebook.select()
+
+        self.textPad = self.codeeditorFrame.textPad
+
+        self.notebook.bind("<ButtonRelease-1>", self.tabChanged)
+        self.notebook.bind("<ButtonRelease-3>", self.closeContext)
+
+        x = len(self.notebook.tabs()) - 1
+        self.notebook.select(x)
+        self.tabChanged()
+
+
+        try:
+            # open file for reading
+            with open(filename, 'r') as f:
+                text = f.read()
+
+            # update textPad
+            self.textPad.delete('1.0', tk.END)
+            self.textPad.insert("1.0", text)
+            self.textPad.filename = filename
+            self.textPad.tag_all_lines()
+
+        except Exception as e:
+            MessageDialog(self, 'Error', '\n' + str(e) + '\n')
+            return
 
     def openFileDialog(self):
         dialog = OpenFileDialog(parent=self.parent, notebookFrame=self, title='Open')
@@ -314,7 +371,6 @@ class NotebookFrame(ttk.Frame):
     def settings(self, event=None):
         dialog = SettingsDialog(self)
 
-
     def run(self, event=None):
         if not self.textPad:
             return
@@ -328,6 +384,76 @@ class NotebookFrame(ttk.Frame):
         runCommand = c.getRun(system).format(file)
 
         subprocess.call(runCommand, shell=True)
+
+    def add_prefix(self):
+        """
+        Add prefix to beginning of script to redirect IO.
+        """
+
+        PREFIX = r"""
+# Here is some code that redirects io.
+_input_stream = open("in.txt")
+_output_stream = open("out.txt", "w", buffering=1)
+
+def input():
+    s = _input_stream.readline()
+    if s[-1]=="\n":
+        return s[:-1]
+    else:
+        return s
+
+def print(*s):
+    _output_stream.write(" ".join(map(str,s))+"\n")
+# User Code Below
+"""
+        code = self.textPad.get("1.0", tk.END)
+        code = PREFIX + code
+        print(code)
+        return(code)
+
+    def runAgainst(self):
+
+        if not self.textPad:
+            return
+        self.quicksave()
+        code = self.add_prefix()
+
+        filepath = self.textPad.filename
+
+        random_hex = 'RA%08X' % random.randint(0, 256 ** 4 - 1)
+
+        dot = filepath.rindex(".")
+        tmp_filepath = 'tmp'+filepath[:dot] + random_hex + filepath[dot:]
+
+        with open(tmp_filepath, "w") as f:
+            f.write(code)
+
+        c = Configuration()  # -> in configuration.py
+        system = c.getSystem()
+
+
+        file = tmp_filepath.split('/')[-1]
+        runCommand = c.getRun(system).format(file)
+
+        try:
+            open("in.txt")
+        except FileNotFoundError:
+            with open("in.txt", "w") as f:
+                f.write("This is your input file. Write the desired input here.")
+            MessageDialog(self, "Error", "No in.txt file provided. I have created one for you.")
+            self.openFile("in.txt")
+
+        try:
+            open("res.txt")
+        except FileNotFoundError:
+            with open("res.txt", "w") as f:
+                f.write("This is your result file. Write the desired output here. "
+                        "The real output will be written to out.txt")
+            MessageDialog(self, "Error", "No res.txt file provided. I have created one for you.")
+            self.openFile("res.txt")
+
+        subprocess.call(runCommand, shell=True)
+        self.openFile("out.txt")
 
     def terminal(self, event=None):
         c = Configuration()     # -> in configuration.py
@@ -421,12 +547,12 @@ class NotebookFrame(ttk.Frame):
             if self.textPad.filename:
                 self.parent.title(self.textPad.filename)
             else:
-                self.parent.title("MoPad - Morten's cross platform Python Pad")
+                self.parent.title("CPIDE - Competitive Programming IDE")
         else:
             if self.textPad.filename:
                 self.overlord.title(self.textPad.filename)
             else:
-                self.overlord.title("MoPad - Morten's cross platform Python Pad")
+                self.overlord.title("CPIDE - Competitive Programming IDE")
 
         
     def closeContext(self, event=None):

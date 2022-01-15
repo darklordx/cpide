@@ -4,6 +4,9 @@ import configparser
 import os
 import sys
 
+def foo():
+    print("Hello!")
+
 class Configuration():
     
     def __init__(self):
@@ -17,7 +20,7 @@ class Configuration():
         path = os.path.realpath(__file__)      # Pfad ermitteln
         
         basename = self.checkPath(os.path.dirname(path))
-        path = basename + '/mopad.ini'
+        path = basename + '/cpide.ini'
         
         return path
         
@@ -45,7 +48,7 @@ class Configuration():
         path = os.path.realpath(__file__)    
         basename = self.checkPath(os.path.dirname(path))
 
-        iniPath = basename + "/mopad.ini"
+        iniPath = basename + "/cpide.ini"
         
         with open(iniPath, 'w') as f:
             self.config.write(f)

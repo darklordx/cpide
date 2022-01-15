@@ -16,7 +16,8 @@ from dialog import (RenameDialog, NewDirectoryDialog,
 from theme import FileColors
 
 
-class FilebrowserFrame(ttk.Frame):
+class FilebrowserFrame(ttk.Treeview):
+    #  Changing this to Frame doesn't seem to do anything.
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
@@ -39,7 +40,8 @@ class FilebrowserFrame(ttk.Frame):
         self.tree = ttk.Treeview(self)
 
         for k in FileColors:
-            self.tree.tag_configure(k, background='black', foreground=FileColors[k])
+            self.tree.tag_configure(k, background='black',
+                                    foreground=FileColors[k])
 
         self.tree['show'] = 'tree'
         self.tree.bind("<Double-1>", self.OnDoubleClickTreeview)

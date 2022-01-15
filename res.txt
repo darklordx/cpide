@@ -1,0 +1,1 @@
+This is your result file. Write the desired output here. The real output will be written to out.txt

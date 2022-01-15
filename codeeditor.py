@@ -170,18 +170,22 @@ class CodeEditor(tk.Text):
     def get_complexity_tokens(self):
         """
         This gets all lines relevant to complexity analysis to be fed into leftbar.
+
+        ...later I decided to just dump all the code into the leftbar XD
         """
-        tags = self.tag_ranges("keywordloop")
-        # print(tags)
-        x = set(int(str(i).split(".")[0]) for i in tags)
-        # print(x)
-        res = {}
-        for line_number in x:
-            line_beginning = f"{line_number}.0"
-            line_text = self.get(line_beginning, line_beginning + " lineend")
-            res.update({line_number: line_text})
-        # print(res)
-        return res
+
+        return self.get("1.0", tk.END)
+        # tags = self.tag_ranges("keywordloop")
+        # # print(tags)
+        # x = set(int(str(i).split(".")[0]) for i in tags)
+        # # print(x)
+        # res = {}
+        # for line_number in x:
+        #     line_beginning = f"{line_number}.0"
+        #     line_text = self.get(line_beginning, line_beginning + " lineend")
+        #     res.update({line_number: line_text})
+        # # print(res)
+        # return res
 
     def number_of_leading_spaces(self, line):
         spaces = re.search(self.SPACES_REGEX, line)

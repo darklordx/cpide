@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="3d4ead2d-91f9-42b3-ad8b-33072bc32500" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -17,22 +20,47 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
   <component name="ProjectId" id="20peTILbaQvU4q92pWDbOj2KyMl" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
-    <option name="showExcludedFiles" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="restartRequiresConfirmation" value="false" />
-    <property name="settings.editor.selected.configurable" value="editor.preferences.folding" />
+    <property name="com.intellij.ide.scratch.LRUPopupBuilder$1/New Scratch File" value="Python" />
+    <property name="com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File" value="Python" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../pineapple/src/falcon/generate.py" />
+    <property name="settings.editor.selected.configurable" value="PyConsoleConfigurable.Python Console" />
   </component>
-  <component name="RunManager" selected="Python.mopad">
-    <configuration name="codeeditor" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="mopad" />
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <console-settings module-name="cpide" sdk-home="C:\Users\rowec\Documents\cpide\venv\Scripts\python.exe">
+        <option name="mySdkHome" value="C:\Users\rowec\Documents\cpide\venv\Scripts\python.exe" />
+        <option name="myModuleName" value="cpide" />
+      </console-settings>
+    </option>
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\rowec\Documents\cpide" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.generate">
+    <configuration name="cpide (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="cpide" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -43,7 +71,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/codeeditor.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/cpide.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -52,8 +80,8 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="dialog" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="mopad" />
+    <configuration name="cpide" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="cpide" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -64,7 +92,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/dialog.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../mopad/cpide.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -73,19 +101,19 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="filebrowser" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="mopad" />
+    <configuration name="generate" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="cpide" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../pineapple/src/falcon" />
+      <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/filebrowser.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../pineapple/src/falcon/generate.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -95,7 +123,7 @@
       <method v="2" />
     </configuration>
     <configuration name="leftbar" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="mopad" />
+      <module name="cpide" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -115,8 +143,8 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="mopad" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="mopad" />
+    <configuration name="notebook" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="cpide" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -127,7 +155,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/mopad.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/notebook.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -136,16 +164,24 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue="Python.cpide (1)" />
+      <item itemvalue="Python.cpide" />
+      <item itemvalue="Python.leftbar" />
+      <item itemvalue="Python.notebook" />
+      <item itemvalue="Python.generate" />
+    </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.mopad" />
-        <item itemvalue="Python.codeeditor" />
+        <item itemvalue="Python.generate" />
+        <item itemvalue="Python.cpide (1)" />
+        <item itemvalue="Python.notebook" />
         <item itemvalue="Python.leftbar" />
-        <item itemvalue="Python.dialog" />
-        <item itemvalue="Python.filebrowser" />
+        <item itemvalue="Python.cpide" />
       </list>
     </recent_temporary>
   </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -158,45 +194,5 @@
       <updated>1636745962674</updated>
     </task>
     <servers />
-  </component>
-  <component name="WindowStateProjectService">
-    <state width="1899" height="125" key="GridCell.Tab.0.bottom" timestamp="1637095221647">
-      <screen x="0" y="0" width="1920" height="1080" />
-    </state>
-    <state width="1899" height="125" key="GridCell.Tab.0.bottom/0.0.1920.1080@0.0.1920.1080" timestamp="1637095221647" />
-    <state width="3419" height="182" key="GridCell.Tab.0.bottom/1520.1440.1920.1080/0.0.3440.1440/3440.0.1920.1080@0.0.3440.1440" timestamp="1636950454900" />
-    <state width="1899" height="125" key="GridCell.Tab.0.center" timestamp="1637095221647">
-      <screen x="0" y="0" width="1920" height="1080" />
-    </state>
-    <state width="1899" height="125" key="GridCell.Tab.0.center/0.0.1920.1080@0.0.1920.1080" timestamp="1637095221647" />
-    <state width="3419" height="182" key="GridCell.Tab.0.center/1520.1440.1920.1080/0.0.3440.1440/3440.0.1920.1080@0.0.3440.1440" timestamp="1636950454900" />
-    <state width="1899" height="125" key="GridCell.Tab.0.left" timestamp="1637095221647">
-      <screen x="0" y="0" width="1920" height="1080" />
-    </state>
-    <state width="1899" height="125" key="GridCell.Tab.0.left/0.0.1920.1080@0.0.1920.1080" timestamp="1637095221647" />
-    <state width="3419" height="182" key="GridCell.Tab.0.left/1520.1440.1920.1080/0.0.3440.1440/3440.0.1920.1080@0.0.3440.1440" timestamp="1636950454900" />
-    <state width="1899" height="125" key="GridCell.Tab.0.right" timestamp="1637095221647">
-      <screen x="0" y="0" width="1920" height="1080" />
-    </state>
-    <state width="1899" height="125" key="GridCell.Tab.0.right/0.0.1920.1080@0.0.1920.1080" timestamp="1637095221647" />
-    <state width="3419" height="182" key="GridCell.Tab.0.right/1520.1440.1920.1080/0.0.3440.1440/3440.0.1920.1080@0.0.3440.1440" timestamp="1636950454900" />
-    <state x="1221" y="362" key="SettingsEditor" timestamp="1636940581699">
-      <screen x="0" y="0" width="3440" height="1440" />
-    </state>
-    <state x="1221" y="362" key="SettingsEditor/1520.1440.1920.1080/0.0.3440.1440/3440.0.1920.1080@0.0.3440.1440" timestamp="1636940581699" />
-    <state x="656" y="363" key="com.intellij.ide.util.TipDialog" timestamp="1637093289805">
-      <screen x="0" y="0" width="1920" height="1080" />
-    </state>
-    <state x="656" y="363" key="com.intellij.ide.util.TipDialog/0.0.1920.1080@0.0.1920.1080" timestamp="1637093289805" />
-    <state x="1175" y="484" key="com.intellij.ide.util.TipDialog/1520.1440.1920.1080/0.0.3440.1440/3440.0.1920.1080@0.0.3440.1440" timestamp="1636940413519" />
-    <state x="603" y="154" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1636862857149">
-      <screen x="0" y="0" width="1920" height="1080" />
-    </state>
-    <state x="603" y="154" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.0.1920.1080@0.0.1920.1080" timestamp="1636862857149" />
-    <state x="623" y="235" width="672" height="678" key="search.everywhere.popup" timestamp="1637094404806">
-      <screen x="0" y="0" width="1920" height="1080" />
-    </state>
-    <state x="623" y="235" width="672" height="678" key="search.everywhere.popup/0.0.1920.1080@0.0.1920.1080" timestamp="1637094404806" />
-    <state x="1116" y="313" width="1204" height="904" key="search.everywhere.popup/1520.1440.1920.1080/0.0.3440.1440/3440.0.1920.1080@0.0.3440.1440" timestamp="1636940464439" />
   </component>
 </project>
