@@ -58,7 +58,7 @@
       <recent name="C:\Users\rowec\Documents\cpide" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.generate">
+  <component name="RunManager" selected="Python.cpide (1)">
     <configuration name="cpide (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="cpide" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -173,8 +173,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.generate" />
         <item itemvalue="Python.cpide (1)" />
+        <item itemvalue="Python.generate" />
         <item itemvalue="Python.notebook" />
         <item itemvalue="Python.leftbar" />
         <item itemvalue="Python.cpide" />

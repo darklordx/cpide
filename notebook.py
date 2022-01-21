@@ -31,7 +31,11 @@ class NotebookFrame(ttk.Frame):
             self.overlord = None
         
         self.filebrowserFrame = None
-        
+
+        self.runContinuousFlag = False
+
+
+        self.continuousCount = 0
         self.initUI()
     
     def initUI(self):
@@ -109,6 +113,15 @@ class NotebookFrame(ttk.Frame):
         settingsButton.pack(side=tk.LEFT)
         settingsButton_ttp = CreateToolTip(settingsButton, "Show Settings")
 
+
+        runContinuous = tk.PhotoImage(file=HOMEPATH + 'images/run.png')
+        runContinuousButton = ttk.Button(self.buttonFrame, image=runContinuous, command=self.runContinuous)
+        runContinuousButton.image = runContinuous
+        runContinuousButton.pack(side=tk.RIGHT)
+        runContinuousButton_ttp = CreateToolTip(runContinuousButton, "Run Continuously")
+
+
+
         runAgainstIcon = tk.PhotoImage(file=HOMEPATH + 'images/run.png')
         runAgainstButton = ttk.Button(self.buttonFrame, image=runAgainstIcon, command=self.runAgainst)
         runAgainstButton.image = runAgainstIcon
@@ -157,6 +170,10 @@ class NotebookFrame(ttk.Frame):
         #self.searchBox.bind('<Key>', self.OnSearchBoxChange)
         self.searchBox.bind('<Return>', self.search)
         self.searchBox.pack(side=tk.RIGHT, padx=5)
+
+
+        # self.autoRun = tk.Button(root, image = )
+
     
     def newCP(self):
         try:
@@ -411,6 +428,29 @@ def print(*s):
         print(code)
         return(code)
 
+    def runContinuous(self):
+        if self.runContinuousFlag:
+            self.runContinuousFlag = False
+        else:
+            self.runContinuousFlag = True
+            # self.continuousCount = 30
+
+            self.runContinuousLoop()
+
+    def runContinuousLoop(self):
+        if not self.runContinuousFlag:
+            return
+        # if self.continuousCount < 0:
+        #     self.runContinuousFlag=False
+        #     return
+
+        self.runAgainst()
+
+        # self.continuousCount -= 1
+        self.after(ms = 15000, func = self.runContinuousLoop)
+
+
+
     def runAgainst(self):
 
         if not self.textPad:
@@ -452,8 +492,12 @@ def print(*s):
             MessageDialog(self, "Error", "No res.txt file provided. I have created one for you.")
             self.openFile("res.txt")
 
+        try:
+            open("out.txt")
+        except FileNotFoundError:
+            self.openFile("out.txt")
+
         subprocess.call(runCommand, shell=True)
-        self.openFile("out.txt")
 
     def terminal(self, event=None):
         c = Configuration()     # -> in configuration.py
