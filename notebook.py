@@ -20,38 +20,38 @@ import gc
 import webbrowser
 import subprocess
 
+
 class NotebookFrame(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
-        
+
         try:
             self.overlord = self.parent.parent
         except:
             self.overlord = None
-        
+
         self.filebrowserFrame = None
 
         self.runContinuousFlag = False
 
-
         self.continuousCount = 0
         self.initUI()
-    
+
     def initUI(self):
         self.buttonFrame = ttk.Frame(self)
         self.initButtons()
         self.notebook = ttk.Notebook(self)
-        
+
         self.buttonFrame.pack(side=tk.TOP, fill=tk.X)
         self.notebook.pack(side=tk.TOP, expand=True, fill=tk.BOTH)
 
         self.newCP()
         self.new()
-    
+
     def initButtons(self):
         HOMEPATH = os.path.dirname(__file__) + '/'
-        
+
         # Buttons
         newIcon = tk.PhotoImage(file=HOMEPATH + 'images/new.png')
         newButton = ttk.Button(self.buttonFrame, image=newIcon, command=self.new)
@@ -63,8 +63,8 @@ class NotebookFrame(ttk.Frame):
         openButton = ttk.Button(self.buttonFrame, image=openIcon, command=self.openFileDialog)
         openButton.image = openIcon
         openButton.pack(side=tk.LEFT)
-        openButton_ttp = CreateToolTip(openButton, 'Open') 
-        
+        openButton_ttp = CreateToolTip(openButton, 'Open')
+
         saveIcon = tk.PhotoImage(file=HOMEPATH + 'images/save.png')
         saveButton = ttk.Button(self.buttonFrame, image=saveIcon, command=self.save)
         saveButton.image = saveIcon
@@ -113,14 +113,11 @@ class NotebookFrame(ttk.Frame):
         settingsButton.pack(side=tk.LEFT)
         settingsButton_ttp = CreateToolTip(settingsButton, "Show Settings")
 
-
         runContinuous = tk.PhotoImage(file=HOMEPATH + 'images/run.png')
         runContinuousButton = ttk.Button(self.buttonFrame, image=runContinuous, command=self.runContinuous)
         runContinuousButton.image = runContinuous
         runContinuousButton.pack(side=tk.RIGHT)
         runContinuousButton_ttp = CreateToolTip(runContinuousButton, "Run Continuously")
-
-
 
         runAgainstIcon = tk.PhotoImage(file=HOMEPATH + 'images/run.png')
         runAgainstButton = ttk.Button(self.buttonFrame, image=runAgainstIcon, command=self.runAgainst)
@@ -128,13 +125,12 @@ class NotebookFrame(ttk.Frame):
         runAgainstButton.pack(side=tk.RIGHT)
         runAgainstButton_ttp = CreateToolTip(runAgainstButton, "Run Against Input File")
 
-
         runIcon = tk.PhotoImage(file=HOMEPATH + 'images/run.png')
         runButton = ttk.Button(self.buttonFrame, image=runIcon, command=self.run)
         runButton.image = runIcon
         runButton.pack(side=tk.RIGHT)
         runButton_ttp = CreateToolTip(runButton, "Run File")
-        
+
         terminalIcon = tk.PhotoImage(file=HOMEPATH + 'images/terminal.png')
         terminalButton = ttk.Button(self.buttonFrame, image=terminalIcon, command=self.terminal)
         terminalButton.image = terminalIcon
@@ -154,27 +150,24 @@ class NotebookFrame(ttk.Frame):
         viewButton.pack(side=tk.RIGHT)
         self.createToolTip(viewButton, 'Class Overview')
         '''
-        
+
         searchIcon = tk.PhotoImage(file=HOMEPATH + 'images/search.png')
         searchButton = ttk.Button(self.buttonFrame, image=searchIcon, command=self.search)
         searchButton.image = searchIcon
         searchButton.pack(side=tk.RIGHT)
         searchButton_ttp = CreateToolTip(searchButton, "Search")
 
-
         self.searchBox = tk.Entry(self.buttonFrame, bg='black', fg='white')
         self.searchBox.configure(cursor="xterm green")
-        self.searchBox.configure(insertbackground = "red")
+        self.searchBox.configure(insertbackground="red")
         self.searchBox.configure(highlightcolor='#448dc4')
 
-        #self.searchBox.bind('<Key>', self.OnSearchBoxChange)
+        # self.searchBox.bind('<Key>', self.OnSearchBoxChange)
         self.searchBox.bind('<Return>', self.search)
         self.searchBox.pack(side=tk.RIGHT, padx=5)
 
-
         # self.autoRun = tk.Button(root, image = )
 
-    
     def newCP(self):
         try:
             open("in.txt")
@@ -191,58 +184,56 @@ class NotebookFrame(ttk.Frame):
                         "The real output will be written to out.txt")
         self.openFile("res.txt")
 
-
     def new(self, event=None):
         self.codeeditorFrame = CodeeditorFrame(self)
         self.notebook.add(self.codeeditorFrame, text='noname')
         self.frameName = self.notebook.select()
 
         self.textPad = self.codeeditorFrame.textPad
-        
+
         self.notebook.bind("<ButtonRelease-1>", self.tabChanged)
         self.notebook.bind("<ButtonRelease-3>", self.closeContext)
-        
+
         x = len(self.notebook.tabs()) - 1
         self.notebook.select(x)
         self.tabChanged()
-    
+
     def open(self, filename=None, event=None):
         if not filename:
             filename = filedialog.askopenfilename()
-        
+
             if not filename:
                 return
-        
+
         try:
             # open file for reading
             with open(filename, 'r') as f:
                 text = f.read()
-        
+
             # update textPad
             self.textPad.delete('1.0', tk.END)
             self.textPad.insert("1.0", text)
             self.textPad.filename = filename
             self.textPad.tag_all_lines()
-        
+
         except Exception as e:
             MessageDialog(self, 'Error', '\n' + str(e) + '\n')
             return
-            
+
         # update tab text
         file = self.textPad.filename.split('/')[-1]
         id = self.notebook.index(self.notebook.select())
         self.notebook.tab(id, text=file)
-        
+
         # generate tabChanged event (get new textPad, etc)
         self.tabChanged()
-        
+
         # update autocompleteList from codeeditor
         # self.textPad.updateAutoCompleteList()
         self.filebrowserFrame.refreshTree()
 
     def openFile(self, filename, event=None):
         self.codeeditorFrame = CodeeditorFrame(self)
-
 
         self.notebook.add(self.codeeditorFrame, text=filename)
         self.frameName = self.notebook.select()
@@ -255,7 +246,6 @@ class NotebookFrame(ttk.Frame):
         x = len(self.notebook.tabs()) - 1
         self.notebook.select(x)
         self.tabChanged()
-
 
         try:
             # open file for reading
@@ -302,12 +292,12 @@ class NotebookFrame(ttk.Frame):
             MessageDialog(self, 'Error', '\n' + str(e) + '\n')
         # update textPad
         self.textPad.filename = filename
-        
+
         # update tab text
         file = self.textPad.filename.split('/')[-1]
         id = self.notebook.index(self.notebook.select())
         self.notebook.tab(id, text=file)
-        
+
         # generate tabChanged event (get new textPad, etc)
         self.tabChanged()
         self.filebrowserFrame.refreshTree()
@@ -324,14 +314,14 @@ class NotebookFrame(ttk.Frame):
         # print file to html
         if not self.textPad:
             return
-            
+
         if not self.textPad.filename:
             return
 
-        text = self.textPad.get("1.0",'end-1c')
+        text = self.textPad.get("1.0", 'end-1c')
         filename = self.textPad.filename.split('/')[-1]
         kwList = keyword.kwlist
-        
+
         output = "<head>" + filename + "</head>\n"
         output += "<body>\n"
         output += '<pre><code>\n'
@@ -340,23 +330,23 @@ class NotebookFrame(ttk.Frame):
         output += "</body>"
 
         fname = self.textPad.filename + "_.html"
-        
+
         with open(fname, "w") as f:
             f.write(output)
-        
+
         try:
             webbrowser.open(fname)
-        
+
         except Exception as e:
             MessageDialog(self, 'Error', '\n' + str(e) + '\n')
             return
-        
+
         self.filebrowserFrame.refreshTree()
-        
+
     def undo(self, event=None):
         if self.textPad:
             self.textPad.undo()
-        
+
     def redo(self, event=None):
         if self.textPad:
             self.textPad.redo()
@@ -395,8 +385,8 @@ class NotebookFrame(ttk.Frame):
         filepath = self.textPad.filename
 
         file = filepath.split('/')[-1]
-    
-        c = Configuration()     # -> in configuration.py
+
+        c = Configuration()  # -> in configuration.py
         system = c.getSystem()
         runCommand = c.getRun(system).format(file)
 
@@ -426,7 +416,7 @@ def print(*s):
         code = self.textPad.get("1.0", tk.END)
         code = PREFIX + code
         print(code)
-        return(code)
+        return code
 
     def runContinuous(self):
         if self.runContinuousFlag:
@@ -447,9 +437,7 @@ def print(*s):
         self.runAgainst()
 
         # self.continuousCount -= 1
-        self.after(ms = 15000, func = self.runContinuousLoop)
-
-
+        self.after(ms=15000, func=self.runContinuousLoop)
 
     def runAgainst(self):
 
@@ -463,14 +451,13 @@ def print(*s):
         random_hex = 'RA%08X' % random.randint(0, 256 ** 4 - 1)
 
         dot = filepath.rindex(".")
-        tmp_filepath = 'tmp'+filepath[:dot] + random_hex + filepath[dot:]
+        tmp_filepath = 'tmp' + filepath[:dot] + random_hex + filepath[dot:]
 
         with open(tmp_filepath, "w") as f:
             f.write(code)
 
         c = Configuration()  # -> in configuration.py
         system = c.getSystem()
-
 
         file = tmp_filepath.split('/')[-1]
         runCommand = c.getRun(system).format(file)
@@ -500,34 +487,33 @@ def print(*s):
         subprocess.call(runCommand, shell=True)
 
     def terminal(self, event=None):
-        c = Configuration()     # -> in configuration.py
+        c = Configuration()  # -> in configuration.py
         system = c.getSystem()
         terminalCommand = c.getTerminal(system)
-        
+
         try:
             subprocess.call(terminalCommand, shell=True)
         except Exception as e:
             dialog = MessageDialog(self, 'Error', '\n' + str(e) + '\n')
             return
 
-
     def interpreter(self, event=None):
-        c = Configuration()     # -> in configuration.py
+        c = Configuration()  # -> in configuration.py
         system = c.getSystem()
         interpreterCommand = c.getInterpreter(system)
 
         subprocess.call(interpreterCommand, shell=True)
-    
+
     def search(self, start=None):
         if not self.textPad:
             return
-            
+
         self.textPad.tag_remove('sel', "1.0", tk.END)
-        
+
         toFind = self.searchBox.get()
         pos = self.textPad.index(tk.INSERT)
         result = self.textPad.search(toFind, str(pos), stopindex=tk.END)
-        
+
         if result:
             length = len(toFind)
             row, col = result.split('.')
@@ -567,26 +553,25 @@ def print(*s):
     #         canvas.destroy()
     #         self.textPad.update()
 
-
     def tabChanged(self, event=None):
         tabs = self.notebook.tabs()
         try:
             id = self.notebook.index(self.notebook.select())
         except:
-            return 
-            
+            return
+
         name = tabs[id]
         codeframe = self.notebook._nametowidget(name)
-        
+
         self.textPad = codeframe.textPad
-    
+
         self.updateMainWindow()
         self.textPad.focus()
-        
+
     def updateMainWindow(self, event=None):
         if not self.textPad:
             return
-            
+
         if not self.overlord:
             if self.textPad.filename:
                 self.parent.title(self.textPad.filename)
@@ -598,21 +583,20 @@ def print(*s):
             else:
                 self.overlord.title("CPIDE - Competitive Programming IDE")
 
-        
     def closeContext(self, event=None):
         tabs = self.notebook.tabs()
         if not tabs:
             return
-        
-        menu = tk.Menu(self.notebook, tearoff=False, background='#000000',foreground='white',
-                activebackground='blue', activeforeground='white')
+
+        menu = tk.Menu(self.notebook, tearoff=False, background='#000000', foreground='white',
+                       activebackground='blue', activeforeground='white')
         menu.add_command(label='Close', compound=tk.LEFT, command=self.closeTab)
         menu.tk_popup(event.x_root, event.y_root, 0)
-        
+
     def closeTab(self, event=None):
         id = self.notebook.index(self.notebook.select())
         self.notebook.forget(id)
-        
+
         try:
             x = len(self.notebook.tabs()) - 1
             self.notebook.select(x)
@@ -620,16 +604,18 @@ def print(*s):
         except:
             self.textPad = None
             return
-        
+
+
 ###################################################################
 class CreateToolTip():
     """
     create a tooltip for a given widget
     -> this solution was found on stackoverlow.com :)
     """
+
     def __init__(self, widget, text='widget info'):
-        self.waittime = 500     # miliseconds
-        self.wraplength = 180   # pixels
+        self.waittime = 500  # miliseconds
+        self.wraplength = 180  # pixels
         self.widget = widget
         self.text = text
         self.widget.bind("<Enter>", self.enter)
@@ -660,24 +646,26 @@ class CreateToolTip():
         x, y, cx, cy = self.widget.bbox("insert")
         x += self.widget.winfo_rootx() + 1
         y += self.widget.winfo_rooty() + 40
-        
+
         # creates a toplevel window
         self.tw = tk.Toplevel(self.widget)
-        
+
         # Leaves only the label and removes the app window
         self.tw.wm_overrideredirect(True)
         self.tw.wm_geometry("+%d+%d" % (x, y))
         label = tk.Label(self.tw, text=self.text, justify='left',
-                       background="#000000", foreground='#5252FF',
-                       relief='solid', borderwidth=1,
-                       wraplength = self.wraplength)
+                         background="#000000", foreground='#5252FF',
+                         relief='solid', borderwidth=1,
+                         wraplength=self.wraplength)
         label.pack(ipadx=1)
 
     def hidetip(self):
         tw = self.tw
-        self.tw= None
+        self.tw = None
         if tw:
             tw.destroy()
+
+
 ###################################################################
 
 
