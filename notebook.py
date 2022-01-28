@@ -113,6 +113,12 @@ class NotebookFrame(ttk.Frame):
         settingsButton.pack(side=tk.LEFT)
         settingsButton_ttp = CreateToolTip(settingsButton, "Show Settings")
 
+        self.scoreBar = ttk.Progressbar(self.buttonFrame, orient = tk.HORIZONTAL, length = 100, mode = 'determinate')
+        self.scoreBar.pack(side=tk.RIGHT)
+        scoreBar_ttp = CreateToolTip(self.scoreBar, "This scorebar will show you how many lines of output are correct")
+        self.scoreBar['value'] = 100
+
+
         runContinuous = tk.PhotoImage(file=HOMEPATH + 'images/run.png')
         runContinuousButton = ttk.Button(self.buttonFrame, image=runContinuous, command=self.runContinuous)
         runContinuousButton.image = runContinuous
@@ -439,6 +445,35 @@ def print(*s):
         # self.continuousCount -= 1
         self.after(ms=15000, func=self.runContinuousLoop)
 
+    """
+    This compares the results.txt file against the output file.
+    """
+    def getscore(self) -> float:
+        score = 0
+        o = ""
+        r = ""
+        try:
+            with open("out.txt") as out:
+                o = out.readlines()
+            with open("res.txt") as res:
+                r = res.readlines()
+        except FileNotFoundError:
+            score = 0
+            print("No file bruh")
+
+        if len(o) == len(r) > 0:
+            for i, j in zip(o, r):
+                if i == j:
+                    score += 1
+            score /= len(r)
+        else:
+            print("Lines don't match.")
+        return score
+
+    def updatescore(self):
+        score = self.getscore()
+        self.scoreBar['value'] = score*100
+
     def runAgainst(self):
 
         if not self.textPad:
@@ -447,11 +482,17 @@ def print(*s):
         code = self.add_prefix()
 
         filepath = self.textPad.filename
+        print(filepath)
 
         random_hex = 'RA%08X' % random.randint(0, 256 ** 4 - 1)
 
         dot = filepath.rindex(".")
-        tmp_filepath = 'tmp' + filepath[:dot] + random_hex + filepath[dot:]
+
+        try:
+            what = filepath.rindex("/")
+        except ValueError:
+            what = -1
+        tmp_filepath = filepath[:what+1] + 'tmp' + filepath[what+1:dot] + random_hex + filepath[dot:]
 
         with open(tmp_filepath, "w") as f:
             f.write(code)
@@ -484,7 +525,10 @@ def print(*s):
         except FileNotFoundError:
             self.openFile("out.txt")
 
+        self.updatescore()
+
         subprocess.call(runCommand, shell=True)
+
 
     def terminal(self, event=None):
         c = Configuration()  # -> in configuration.py
