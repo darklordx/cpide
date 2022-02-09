@@ -65,6 +65,7 @@ class CPIDE(ttk.Frame):
         self.style.theme_use('clam')
 
 
+
         # https://bugs.python.org/issue36468
         def fixed_map(option):
             # Fix for setting text colour for Tkinter 8.6.9
@@ -178,6 +179,13 @@ class CPIDE(ttk.Frame):
                                        ('!focus', 'white')],
                        activerelief=[('pressed', 'groove'),
                                      ('!pressed', 'ridge')])
+
+
+        self.style.configure('red.Horizontal.TProgressbar', background='red',
+                             fieldbackground='red', foreground='red')
+
+        self.style.configure('white.Horizontal.TProgressbar', background='blue',
+                             fieldbackground='blue', foreground='blue')
 
 
 def center(win):

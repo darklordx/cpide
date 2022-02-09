@@ -11,7 +11,7 @@ import random
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
-from codeeditor import CodeeditorFrame
+from codeeditor import CodeeditorFrame, IOFrame
 from dialog import OpenFileDialog, SettingsDialog, MessageDialog, SaveFileDialog
 from configuration import Configuration
 import keyword
@@ -39,6 +39,8 @@ class NotebookFrame(ttk.Frame):
         self.initUI()
 
     def initUI(self):
+        self.style = ttk.Style()
+
         self.buttonFrame = ttk.Frame(self)
         self.initButtons()
         self.notebook = ttk.Notebook(self)
@@ -174,13 +176,43 @@ class NotebookFrame(ttk.Frame):
 
         # self.autoRun = tk.Button(root, image = )
 
+    def openIOFile(self, filename, event=None):
+        self.codeeditorFrame = IOFrame(self)
+
+        self.notebook.add(self.codeeditorFrame, text=filename)
+
+        self.textPad = self.codeeditorFrame.textPad
+
+        self.notebook.bind("<ButtonRelease-1>", self.tabChanged)
+        self.notebook.bind("<ButtonRelease-3>", self.closeContext)
+
+        x = len(self.notebook.tabs()) - 1
+        self.notebook.select(x)
+        self.tabChanged()
+
+        try:
+            # open file for reading
+            with open(filename, 'r') as f:
+                text = f.read()
+
+            # update textPad
+            self.textPad.delete('1.0', tk.END)
+            self.textPad.insert("1.0", text)
+            self.textPad.filename = filename
+            self.textPad.tag_all_lines()
+
+        except Exception as e:
+            MessageDialog(self, 'Error', '\n' + str(e) + '\n')
+            return
+
     def newCP(self):
         try:
             open("in.txt")
         except FileNotFoundError:
             with open("in.txt", "w") as f:
                 f.write("This is your input file. Write the desired input here.")
-        self.openFile("in.txt")
+
+        self.openIOFile("in.txt")
 
         try:
             open("res.txt")
@@ -188,12 +220,12 @@ class NotebookFrame(ttk.Frame):
             with open("res.txt", "w") as f:
                 f.write("This is your result file. Write the desired output here. "
                         "The real output will be written to out.txt")
-        self.openFile("res.txt")
+        self.openIOFile("res.txt")
 
     def new(self, event=None):
         self.codeeditorFrame = CodeeditorFrame(self)
         self.notebook.add(self.codeeditorFrame, text='noname')
-        self.frameName = self.notebook.select()
+        # self.frameName = self.notebook.select()
 
         self.textPad = self.codeeditorFrame.textPad
 
@@ -242,7 +274,7 @@ class NotebookFrame(ttk.Frame):
         self.codeeditorFrame = CodeeditorFrame(self)
 
         self.notebook.add(self.codeeditorFrame, text=filename)
-        self.frameName = self.notebook.select()
+        # self.frameName = self.notebook.select()
 
         self.textPad = self.codeeditorFrame.textPad
 
@@ -384,7 +416,7 @@ class NotebookFrame(ttk.Frame):
     def settings(self, event=None):
         dialog = SettingsDialog(self)
 
-    def run(self, event=None):
+    def run(self, event=None, openshell = True):
         if not self.textPad:
             return
         self.quicksave()
@@ -394,7 +426,10 @@ class NotebookFrame(ttk.Frame):
 
         c = Configuration()  # -> in configuration.py
         system = c.getSystem()
-        runCommand = c.getRun(system).format(file)
+        if openshell:
+            runCommand = c.getRun(system).format(file)
+        else:
+            runCommand = c.getRunNoShell(system).format(file)
 
         subprocess.call(runCommand, shell=True)
 
@@ -421,7 +456,7 @@ def print(*s):
 """
         code = self.textPad.get("1.0", tk.END)
         code = PREFIX + code
-        print(code)
+        #print(code)
         return code
 
     def runContinuous(self):
@@ -443,23 +478,20 @@ def print(*s):
         self.runAgainst()
 
         # self.continuousCount -= 1
-        self.after(ms=15000, func=self.runContinuousLoop)
+        self.after(ms=5000, func=self.runContinuousLoop)
 
     """
     This compares the results.txt file against the output file.
     """
     def getscore(self) -> float:
         score = 0
-        o = ""
-        r = ""
         try:
             with open("out.txt") as out:
                 o = out.readlines()
             with open("res.txt") as res:
                 r = res.readlines()
         except FileNotFoundError:
-            score = 0
-            print("No file bruh")
+            return -1
 
         if len(o) == len(r) > 0:
             for i, j in zip(o, r):
@@ -467,12 +499,19 @@ def print(*s):
                     score += 1
             score /= len(r)
         else:
-            print("Lines don't match.")
+            return -1
         return score
 
     def updatescore(self):
         score = self.getscore()
-        self.scoreBar['value'] = score*100
+        if score == -1:
+            self.scoreBar['style'] = "red.Horizontal.TProgressbar"
+            self.scoreBar['value'] = 100
+
+        else:
+
+            self.scoreBar['style'] = "white.Horizontal.TProgressbar"
+            self.scoreBar['value'] = score*100
 
     def runAgainst(self):
 
@@ -501,7 +540,7 @@ def print(*s):
         system = c.getSystem()
 
         file = tmp_filepath.split('/')[-1]
-        runCommand = c.getRun(system).format(file)
+        runCommand = c.getRunNoShell(system).format(file)
 
         try:
             open("in.txt")

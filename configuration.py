@@ -26,6 +26,9 @@ class Configuration():
         
     def getRun(self, system):
         return self.config['Run'][system]
+
+    def getRunNoShell(self, system):
+        return self.config['RunNS'][system]
     
     def getTerminal(self, system):
         return self.config['Terminal'][system]
@@ -63,6 +66,14 @@ class Configuration():
         config['Run']['xterm'] = 'xterm -hold -e "python3 {}"'
         config['Run']['windows'] = 'start cmd /K python {}'
         config['Run']['mac'] = 'open -a Terminal ./python3 {}'
+
+        config['RunNS'] = {}
+        config['RunNS']['mate'] = 'mate-terminal -x sh -c "python3 {}; exec bash"'
+        config['RunNS']['gnome'] = 'gnome-terminal -- sh -c "python3 {}; exec bash"'
+        config['RunNS']['kde'] = 'konsole --hold -e "python3 {}"'
+        config['RunNS']['xterm'] = 'xterm -hold -e "python3 {}"'
+        config['RunNS']['windows'] = 'start cmd /C python {}'
+        config['RunNS']['mac'] = 'open -a Terminal ./python3 {}'
         
         config['Terminal'] = {}
         config['Terminal']['mate'] = 'mate-terminal'

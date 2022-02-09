@@ -8,6 +8,7 @@ from tkinter import font
 from configuration import Configuration
 import importlib
 from leftbar import *
+# from notebook import NotebookFrame
 from theme import CodeEditorColors, KeywordColors
 
 
@@ -628,13 +629,71 @@ class CodeEditor(tk.Text):
     #         self.tag_keywords(None, line_to_tag)
 
 
+
+class IOFrame(ttk.Frame):
+    '''
+        IO Frame, i.e. input or res frame.
+    '''
+
+    def __init__(self, master =None):
+        super().__init__(master)
+        self.pack(expand=True, fill=tk.BOTH)
+        self.initUI()
+        self.master = master
+
+        self.startup = 0
+
+
+    def initUI(self):
+        # frame1
+        frame1 = ttk.Frame(self)
+        frame1.pack(fill=tk.BOTH, expand=True)
+
+        # autocompleteEntry (packed on bottom)
+        # self.autocompleteEntry = ttk.Label(frame1, text='---', font=('Mono', 14))
+        # self.autocompleteEntry.pack(side='bottom', fill='y')
+
+        # scrollbar y
+        textScrollY = ttk.Scrollbar(frame1, orient=tk.VERTICAL)
+        textScrollY.config(cursor="double_arrow")
+        textScrollY.pack(side=tk.RIGHT, fill=tk.Y)
+
+
+        # scrollbar x (packed on bottom)
+        textScrollX = ttk.Scrollbar(frame1, orient=tk.HORIZONTAL)
+        textScrollX.config(cursor="sb_h_double_arrow")
+        textScrollX.pack(side=tk.BOTTOM, fill=tk.X)
+
+        self.textPad = CodeEditor(frame1, undo=True, maxundo=-1,
+                                  autoseparators=True, wrap='none')
+        self.textPad.filename = None
+        self.textPad.pack(side=tk.TOP, expand=True, fill=tk.BOTH)
+
+        textScrollY.config(command=self.textPad.yview)
+        textScrollX.config(command=self.textPad.xview)
+        self.textPad.configure(yscrollcommand=textScrollY.set)
+        self.textPad.configure(xscrollcommand=textScrollX.set)
+
+
+        self.textPad.bind("<<Change>>", self.on_change)
+        self.textPad.bind("<Configure>", self.on_change)
+
+    def on_change(self, event):
+        if self.startup <5:
+            self.startup += 1
+            return
+        self.master.save()
+
+
 class CodeeditorFrame(ttk.Frame):
     '''
         Codeeditor + Linenumber + Complexity Frame
     '''
 
-    def __init__(self, master=None):
+    def __init__(self, master = None):
         super().__init__(master)
+
+        self.master = master
         self.pack(expand=True, fill=tk.BOTH)
         self.initUI()
 
@@ -689,10 +748,10 @@ class CodeeditorFrame(ttk.Frame):
         self.complexity.redraw()
 
 
-if __name__ == '__main__':
-    root = tk.Tk()
-    root['bg'] = 'black'
-
-    app = CodeeditorFrame()
-
-    app.mainloop()
+# if __name__ == '__main__':
+#     root = tk.Tk()
+#     root['bg'] = 'black'
+#
+#     app = CodeeditorFrame()
+#
+#     app.mainloop()
