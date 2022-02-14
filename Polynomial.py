@@ -6,7 +6,7 @@ class Polynomial:
     This is a multivariable polynomial class. It is expressed as a multidimensional array, indexed artificially.
     """
 
-    def __init__(self, degrees: Dict[str, int] = None, coeff: List[int] = None, Z:int = None):
+    def __init__(self, degrees: Dict[str, int] = None, coeff: List[int] = None, Z: int = None):
         if Z is not None:
             self.coefficients = [Z]
             self.degree = {}
@@ -25,6 +25,10 @@ class Polynomial:
 
         # print(repr(self))
 
+    """ ------------------------------------------------------------------------------------------------------------ """
+    """ ---------------------------------------- String Parsing Operations ----------------------------------------- """
+    """ ------------------------------------------------------------------------------------------------------------ """
+
     @classmethod
     def from_string(cls, desired: str):
         desired = desired.replace(" ", "")
@@ -32,7 +36,7 @@ class Polynomial:
         if desired[:2] == "+-":
             desired = desired[1:]
         terms = desired.split("+")
-        res = Polynomial(Z = 0)
+        res = Polynomial(Z=0)
         # print(terms)
         for i in terms:
             res += cls.term_from_string(i)
@@ -78,6 +82,10 @@ class Polynomial:
 
         return Polynomial(degrees=deg, coeff=list_coefficients)
 
+    """ ------------------------------------------------------------------------------------------------------------ """
+    """ -------------------------------- Indexing vs Artificial Array Conversions ---------------------------------- """
+    """ ------------------------------------------------------------------------------------------------------------ """
+
     def term_to_idx(self, desired: Dict[str, int], deg: Dict[str, int] = None) -> int:
         res = 0
         if deg is None:  # In this case, just loop through all variables, no check required.
@@ -101,17 +109,31 @@ class Polynomial:
             index //= deg[i]
         return res
 
-    @classmethod
-    def refresh_variable_indices(cls, var):
-        return {i: j for i, j in enumerate(var)}
+    """ ------------------------------------------------------------------------------------------------------------ """
+    """ --------------------------------------------- Unary Operations --------------------------------------------- """
+    """ ------------------------------------------------------------------------------------------------------------ """
+
+    def invert(self):
+        final_deg = {}
+        final_deg.update(self.degree)
+        final_coefficients = [-i for i in self.coefficients]
+        return Polynomial(degrees=final_deg, coeff=final_coefficients)
+
+    def copy(self):
+        final_deg = {}
+        final_deg.update(self.degree)
+        final_coefficients = self.coefficients[:]
+        return Polynomial(degrees=final_deg, coeff=final_coefficients)
+
+    """ ------------------------------------------------------------------------------------------------------------ """
+    """ --------------------------------------------- Binary Operations -------------------------------------------- """
+    """ ------------------------------------------------------------------------------------------------------------ """
 
     def __add__(self, other):
         if type(other) == int:
-            final_deg = {}
-            final_deg.update(self.degree)
-            final_coefficients = self.coefficients[:]
-            final_coefficients[0] += other
-            return Polynomial(degrees=final_deg, coeff=final_coefficients)
+            res = self.copy()
+            res.coefficients[0] += other
+            return res
         elif type(other) == Polynomial:
             # Merge degrees.
             final_deg = {}
@@ -146,12 +168,19 @@ class Polynomial:
         else:
             raise TypeError("Polynomials can only be added to int and Polynomials.")
 
+    def __sub__(self, other):
+        if type(other) == int:
+            return self + (-other)
+        elif type(other) == Polynomial:
+            return self + (other.invert())
+        else:
+            raise TypeError("Polynomials can only be subtracted from int and Polynomials.")
+
     def __mul__(self, other):
         if type(other) == int:
-            final_deg = {}
-            final_deg.update(self.degree)
-            final_coefficients = [other * i for i in self.coefficients]
-            return Polynomial(degrees=final_deg, coeff=final_coefficients)
+            res = self.copy()
+            res.coefficients = [other * i for i in res.coefficients]
+            return res
         elif type(other) == Polynomial:
             # print(self.coefficients)
             # print(other.coefficients)
@@ -206,6 +235,10 @@ class Polynomial:
         else:
             raise TypeError("Polynomials can only be multiplied by int and Polynomials.")
 
+    """ ------------------------------------------------------------------------------------------------------------ """
+    """ ----------------------------------------- String Representations ------------------------------------------- """
+    """ ------------------------------------------------------------------------------------------------------------ """
+
     def term_to_str(self, idx: int, coefficient: int) -> str:
         assert coefficient != 0
         var = self.idx_to_term(idx)
@@ -236,6 +269,10 @@ class Polynomial:
         res += str(self.variables)
         return res
 
+    """ ------------------------------------------------------------------------------------------------------------ """
+    """ ------------------------------------------------ Test Suite ------------------------------------------------ """
+    """ ------------------------------------------------------------------------------------------------------------ """
+
 
 if __name__ == "__main__":
     number_2 = Polynomial.term_from_string("2")
@@ -248,21 +285,21 @@ if __name__ == "__main__":
     print(abc + xyz)
     print(abc + abc + abc)
 
-    print(abc*abc)
+    print(abc * abc)
 
-    print(abc*xyz)
+    print(abc * xyz)
 
     plus = Polynomial.from_string("a+b")
     minus = Polynomial.from_string("a-b")
     print(plus)
     print(minus)
-    print(plus*minus)
+    print(plus * minus)
 
     w = Polynomial.from_string("a+b+c")
     x = Polynomial.from_string("a+b-c")
     y = Polynomial.from_string("a-b+c")
     z = Polynomial.from_string("a+b+c")
-    print(w*x*y*z)
+    print(w * x * y * z) # Heron's Formula!
 
     while True:
         print(repr(Polynomial.from_string(input())))

@@ -715,7 +715,7 @@ class CodeeditorFrame(ttk.Frame):
         self.linenumber = TextLineNumbers(frame1, width=45, bg='#000000')
         self.linenumber.pack(side="left", fill="y")
 
-        self.complexity = TextTimeComplexity(frame1, width=200, bg='#000000')
+        self.complexity = TextTimeComplexity(frame1, width=400, bg='#000000')
         self.complexity.pack(side="left", fill="y")
 
         # scrollbar x (packed on bottom)

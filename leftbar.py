@@ -54,7 +54,16 @@ class TextTimeComplexity(LeftBar):
         Canvas for Time Complexity Display
     """
 
+    def configFont(self):
+        '''font for linenumbers'''
+        if self.textwidget is None:
+            self.font = font.Font(family='monospace', size=10)
+        else:
+            # Binds the font size to the textwidget's font size; it is stupid to use a second variable.
+            self.font = font.Font(family='monospace', size=2*self.textwidget.font_size//3)
+
     def range_extract(self, s):
+        s.replace(" ", "")
         if "range(" in s:
             # Todo: Slap a regex on this lmao
             start = s.index("range(") + len("range(")
@@ -91,35 +100,73 @@ class TextTimeComplexity(LeftBar):
         lines = lines.split("\n")
         # print(lines[0])
 
-        complexity = ["" for _ in range(len(lines))]
+        complexity = ["" for _ in range(len(lines)+1)]  # Result strings.
+        total_complexity: List[Polynomial] = []  # Cumulative Sum.
         recurrences: List[Polynomial] = [Polynomial(Z=1)]
 
         i: int
         t: str
+        function_depth: int = -1
+        function_name: str = None
+        function_start: int = 0
+        functions = {}
+        total_complexity.append(Polynomial(Z = 0))
         for i, t in enumerate(lines):
             mult = None
             res: str = ""
-            if "for" in t:
+            depth = (len(t) - len(t.lstrip(' '))) // 4
+            recurrences = recurrences[:depth + 1]
+
+            check_functions: str = ""
+            k = t.replace(" ", "")
+            for j in functions:
+                if j + "(" in k:
+                    check_functions = j
+
+            if check_functions != "":
+                res += f"JMP [{check_functions} -> {functions[check_functions]}] "
+                mult = functions[check_functions]
+
+            if "for " in t:
                 res += "FOR "
-                s = "".join(t.split())
-                mult = self.range_extract(s)
-            elif "while" in t:
+                mult = self.range_extract(t)
+            elif "while " in t:
                 res += "WHILE "
-            else:
-                mult = 1  # There is no loop here...
-                continue  # TODO: Implement many more things :D
+
+            if depth <= function_depth:
+                res += "END DEF "
+
+                function_depth = -1
+                functions[function_name] = total_complexity[i] - total_complexity[function_start]
+                res += f"[{functions[function_name]} -> {function_name}] "
+                mult = 1
+
+            if "def " in t:
+                function_name = self.function_name_extract(t)
+                if function_name is not None:
+                    function_depth = depth
+                    res += "DEF " + function_name
+                    mult = 1
+                    function_start = i
+
+
             flag_mult = self.flag_check(t)
             if flag_mult:
                 mult = flag_mult  # flag check overrides.
-            if not mult:
+            if res != "" and (not mult):
                 res += "(?) "
+            if not mult:
                 mult = 1
-            depth = (len(t) - len(t.lstrip(' '))) // 4
-            recurrences = recurrences[:depth + 1]
-            next = recurrences[-1] * mult
-            recurrences.append(next)
-            res += str(next)
+
+            next_complexity = recurrences[-1] * mult
+            recurrences.append(next_complexity)
+            if res != "":  # Otherwise, literally nothing happened :D
+                res += str(next_complexity)
+
+            # res += str(total_complexity[i])
             complexity[i + 1] = res
+
+            total_complexity.append(total_complexity[i] + recurrences[-1])
         return complexity
 
     def redraw(self, *args):
@@ -142,6 +189,13 @@ class TextTimeComplexity(LeftBar):
                 y = dline[1]
                 self.create_text(10, y, anchor="nw", font=self.font, text=complexity[linenum], fill='#FF00FF')
             i = self.textwidget.index("%s+1line" % i)
+
+    @staticmethod
+    def function_name_extract(t):
+        if ("(" not in t) or ("def " not in t):
+            return None
+        else:
+            return t[t.index("def ") + len("def "):t.index("(")]
 
 
 class TextLineNumbers(LeftBar):

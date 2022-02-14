@@ -62,7 +62,7 @@
       <recent name="C:\Users\rowec\Documents\cpide" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.cpide (1)">
+  <component name="RunManager" selected="Python.leftbar">
     <configuration name="Polynomial" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="cpide" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -179,9 +179,9 @@
       <list>
         <item itemvalue="Python.cpide (1)" />
         <item itemvalue="Python.leftbar" />
+        <item itemvalue="Python.codeeditor" />
         <item itemvalue="Python.Polynomial" />
         <item itemvalue="Python.notebook" />
-        <item itemvalue="Python.codeeditor" />
       </list>
     </recent_temporary>
   </component>
