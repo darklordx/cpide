@@ -5,14 +5,18 @@ import subprocess
 import tkinter as tk
 from tkinter import ttk
 from tkinter import font
+
+from typing import List
+
 from configuration import Configuration
 import importlib
 
+from Polynomial import Polynomial
 
 class LeftBar(tk.Canvas):
-    '''
+    """
         Abstract Canvas for LeftBar
-    '''
+    """
 
     def __init__(self, *args, **kwargs):
         tk.Canvas.__init__(self, *args, **kwargs)
@@ -46,9 +50,9 @@ class LeftBar(tk.Canvas):
 
 
 class TextTimeComplexity(LeftBar):
-    '''
+    """
         Canvas for Time Complexity Display
-    '''
+    """
 
     def range_extract(self, s):
         if "range(" in s:
@@ -69,11 +73,17 @@ class TextTimeComplexity(LeftBar):
                     return (end - start) // jump
         return None
 
-    def flag_check(self, s):
+    @staticmethod
+    def flag_check(s):
         if "##" in s:
             s = s[s.rindex("##") + 2:].strip()
             if s.isdigit():
                 return int(s)
+            else:
+                try:
+                    return Polynomial.from_string(s)
+                except:
+                    return None
         return None
 
     def calculate_complexity(self):
@@ -82,7 +92,7 @@ class TextTimeComplexity(LeftBar):
         # print(lines[0])
 
         complexity = ["" for _ in range(len(lines))]
-        recurrences = [1]
+        recurrences: List[Polynomial] = [Polynomial(Z=1)]
 
         i: int
         t: str
@@ -98,9 +108,9 @@ class TextTimeComplexity(LeftBar):
             else:
                 mult = 1  # There is no loop here...
                 continue  # TODO: Implement many more things :D
-            fmult = self.flag_check(t)
-            if fmult:
-                mult = fmult  # flag check overrides.
+            flag_mult = self.flag_check(t)
+            if flag_mult:
+                mult = flag_mult  # flag check overrides.
             if not mult:
                 res += "(?) "
                 mult = 1
