@@ -1,25 +1,24 @@
-# MoPad
-Python tkinter Codeeditor
-
-![alt text](https://github.com/morten1982/mopad/blob/master/images/mopad-git.png)
+# CPIDE
+> Competitive Programming Integrated Development Environment
 
 # Description
-A Python IDE made with tkinter.
+> A Python IDE made with tkinter, tuned for Competitive Programming. This is a fork of MoPad (https://github.com/morten1982/mopad).
 
 
 # Features
-- > Autocomplete with backtab, indent, linenumbers, syntax highlighting
-- > Brace matching included
-- > Sourcecode analyzing
-- > Start terminal window
-- > Start Python Interpreter
-- > Filebrowser included (delete, rename .... files and folders)
 
-- > should be cross platform :) -> but was tested only on linux !
+> - Basic Code Editor Functionality
+> - Code Complexity Analysis
+>   - Basic Loops
+>   - Algebraic Representations
+>   - Functions
+> - Competitive Programming IO
+>   - Output Scoring
+>   - Automatic Execution
 
 
 # Requirements
-tkinter
+> tkinter
  
 # Run
-'python3 mopad.py' (or whatever you use to run Python)
+> 'python3 mopad.py' (or whatever you use to run Python)

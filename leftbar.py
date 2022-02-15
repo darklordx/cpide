@@ -13,6 +13,7 @@ import importlib
 
 from Polynomial import Polynomial
 
+
 class LeftBar(tk.Canvas):
     """
         Abstract Canvas for LeftBar
@@ -60,7 +61,7 @@ class TextTimeComplexity(LeftBar):
             self.font = font.Font(family='monospace', size=10)
         else:
             # Binds the font size to the textwidget's font size; it is stupid to use a second variable.
-            self.font = font.Font(family='monospace', size=2*self.textwidget.font_size//3)
+            self.font = font.Font(family='monospace', size=2 * self.textwidget.font_size // 3)
 
     def range_extract(self, s):
         s.replace(" ", "")
@@ -100,7 +101,7 @@ class TextTimeComplexity(LeftBar):
         lines = lines.split("\n")
         # print(lines[0])
 
-        complexity = ["" for _ in range(len(lines)+1)]  # Result strings.
+        complexity = ["" for _ in range(len(lines) + 1)]  # Result strings.
         total_complexity: List[Polynomial] = []  # Cumulative Sum.
         recurrences: List[Polynomial] = [Polynomial(Z=1)]
 
@@ -110,7 +111,7 @@ class TextTimeComplexity(LeftBar):
         function_name: str = None
         function_start: int = 0
         functions = {}
-        total_complexity.append(Polynomial(Z = 0))
+        total_complexity.append(Polynomial(Z=0))
         for i, t in enumerate(lines):
             mult = None
             res: str = ""
@@ -148,7 +149,6 @@ class TextTimeComplexity(LeftBar):
                     res += "DEF " + function_name
                     mult = 1
                     function_start = i
-
 
             flag_mult = self.flag_check(t)
             if flag_mult:
