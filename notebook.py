@@ -443,7 +443,7 @@ class NotebookFrame(ttk.Frame):
 _input_stream = open("in.txt")
 _output_stream = open("out.txt", "w", buffering=1)
 
-def input():
+def input(_=""):
     s = _input_stream.readline()
     if s[-1]=="\n":
         return s[:-1]

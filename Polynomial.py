@@ -42,12 +42,14 @@ class Polynomial:
             res += cls.term_from_string(i)
         return res
 
-    """
-    Transforms ONE TERM into a Polynomial.
-    """
-
     @classmethod
     def term_from_string(cls, desired: str):
+        """
+        Example usage:
+        Polynomial.term_from_string("-54a^3b^2")
+        @param desired: Input string for parsing, containing one term, i.e. -54a^3b^2
+        @return: Polynomial representing string.
+        """
         desired = desired.replace(" ", "")
         negative_flag = False
         if desired[0] == "-":
@@ -72,7 +74,7 @@ class Polynomial:
             if len(i) == 1:
                 deg.update({i: 2})
             else:
-                # assert i[1] == "^" #TODO: If this doesn't hold then like, stuff might break. But I think this works.
+                # assert i[1] == "^"
                 deg.update({i[0]: int(i[2:]) + 1})
             maxdeg *= deg[i[0]]
         list_coefficients = [0] * maxdeg
@@ -87,6 +89,12 @@ class Polynomial:
     """ ------------------------------------------------------------------------------------------------------------ """
 
     def term_to_idx(self, desired: Dict[str, int], deg: Dict[str, int] = None) -> int:
+        """
+        Example usage: a^2b^3 will be term_to_idx({'a': 2, 'b':3})
+        @param desired: Dictionary of variables to exponents
+        @param deg: Dictionary of array size allocation.
+        @return: index in multidimensional array.
+        """
         res = 0
         if deg is None:  # In this case, just loop through all variables, no check required.
             for i in self.variables[::-1]:  # We already have the keyset.
@@ -101,6 +109,11 @@ class Polynomial:
         return res
 
     def idx_to_term(self, index, deg=None) -> Dict[str, int]:
+        """
+        @param index: index in multidimensional array.
+        @param deg: Dictionary of array size allocation.
+        @return: Dictionary of variables to exponents
+        """
         if deg is None:
             deg = self.degree
         res = {}
@@ -299,7 +312,7 @@ if __name__ == "__main__":
     x = Polynomial.from_string("a+b-c")
     y = Polynomial.from_string("a-b+c")
     z = Polynomial.from_string("a+b+c")
-    print(w * x * y * z) # Heron's Formula!
+    print(w * x * y * z)  # Heron's Formula!
 
     while True:
         print(repr(Polynomial.from_string(input())))
